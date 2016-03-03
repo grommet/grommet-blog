@@ -25,12 +25,9 @@ let styles = sass.renderSync({
   outputStyle: 'compressed'
 }).css;
 
-//import basicAuth from 'basic-auth-connect';
-
 const PORT = process.env.PORT || 8070;
 
 const app = express();
-//app.use(basicAuth('grommet', 'GrommetUX!*2016'));
 app.set('views', path.resolve(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(compression());
