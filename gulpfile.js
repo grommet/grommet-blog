@@ -74,7 +74,8 @@ gulp.task('release:heroku', ['dist', 'release:createTmp'], function(done) {
 
           del.sync(['./**/*']);
 
-          gulp.src('../../dist/**').pipe(gulp.dest('./')).on('end', function() {
+          gulp.src(['../../**'])
+          .pipe(gulp.dest('./')).on('end', function() {
             git.status({
               args: '--porcelain'
             }, function(err, stdout) {
