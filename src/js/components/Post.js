@@ -59,12 +59,25 @@ export default class Post extends Component {
 
   _onPostReceived (post) {
     setDocumentTitle(post.title);
-    this.setState({ post: post });
+    this.setState({ post: post }, () => {
+      if (window.addthis) {
+        let target = (
+          `http://blog.grommet.io/${post.id}`
+        );
+        window.addthis_share.url = target;
+        window.addthis_share.title = post.title;
+        window.addthis.toolbox('.addthis_toolbox');
+      }
+    });
   }
 
   _onPostFailed (err) {
     //TODO: handle errors
     console.log(err);
+  }
+
+  _onSocialClick (event) {
+    event.preventDefault();
   }
 
   _renderPostHeader () {
@@ -97,22 +110,26 @@ export default class Post extends Component {
           data-addthis-title={post.title} className="addthis_toolbox">
           <Box responsive={false} direction="row">
             <Box pad={{horizontal: 'small'}}>
-              <a className="addthis_button_facebook" href="#" title="Facebook">
+              <a className="addthis_button_facebook"
+                href="#" title="Facebook" onClick={this._onSocialClick}>
                 <SocialFacebook a11yTitle="Share on Facebook" />
               </a>
             </Box>
             <Box pad={{horizontal: 'small'}}>
-              <a className="addthis_button_twitter" href="#" title="Twitter">
+              <a className="addthis_button_twitter"
+                href="#" title="Twitter" onClick={this._onSocialClick}>
                 <SocialTwitter a11yTitle="Share on Twitter" />
               </a>
             </Box>
             <Box pad={{horizontal: 'small'}}>
-              <a className="addthis_button_linkedin" href="#" title="Linkedin">
+              <a className="addthis_button_linkedin"
+                href="#" title="Linkedin" onClick={this._onSocialClick}>
                 <SocialLinkedin a11yTitle="Share on Linkedin" />
               </a>
             </Box>
             <Box pad={{horizontal: 'small'}}>
-              <a className="addthis_button_reddit" href="#" title="Reddit">
+              <a className="addthis_button_reddit"
+                href="#" title="Reddit" onClick={this._onSocialClick}>
                 <SocialReddit a11yTitle="Share on Reddit" />
               </a>
             </Box>
