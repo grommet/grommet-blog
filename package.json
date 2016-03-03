@@ -29,6 +29,13 @@
     "argv": "0.0.2",
     "babel-plugin-array-includes": "^2.0.3",
     "babel-plugin-transform-object-rest-spread": "^6.5.0",
-    "babel-register": "^6.5.2"
+    "babel-register": "^6.5.2",
+    "del": "^2.2.0",
+    "gulp-git": "^1.7.0",
+    "mkdirp": "^0.5.1"
+  },
+  "scripts": {
+    "build": "gulp dist",
+    "start": "node server/server.js"
   }
 }

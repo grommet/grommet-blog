@@ -1,0 +1,17 @@
+language: node_js
+node_js: '5'
+sudo: false
+before_script: npm install -g gulp
+script: gulp dist
+after_success:
+- |
+  if [ "$TRAVIS_BRANCH" = "master" ]; then
+    git config credential.helper "store --file=.git/credentials"
+    echo "https://${GH_TOKEN}:@github.com" > .git/credentials
+    git config --global user.name "Grommet Community Bot"
+    git config --global user.email "asouza@hp.com"
+    gulp release:heroku
+  fi
+env:
+  global:
+    secure: ioEl3x6z0xdOe6Lxg0DdHzcvvZ00iZrqBTOPYcEVRSOcM4qaN+ffHOpZ1fBY5ZvMqrUWz7XPZiSjPh8pHZpvUBYC0goEZoqQibSxMRzM8PPvpT8ABJ6qYHgG3EQ+8Uc5xk68bWVBclo0JxCHGfRcXk7fGb3tH7CZ4hAWdBu9p7eazmddBsbEM6ASdaSeklapLBS+aqlUYbfkxIi7MywKSHUOCgZZ3GRWVKz2zPEugBm5yeOADAGuas8qBb3xDGa+s8Zja8a0ZvCgMMK5gbgDN3r7qW+Kd4lQzCqGRRe3Md6kwIz9h1diQoxXsC7DIjKmn+/BoJ1xdUbm6rX+2K1sqwzwC7+q7ooKpPva8BwSVZv5o4BCYQjmWq++IIT5aYnWROHkH+14h91rJprQIDtWn4rldB8bOlt5HYTX0x7OQNCi3Xopw3QF/h3DnWhjiPU92f2e35wc+LUozM+gqGjkKOsH9O8O3Fd4+D9/Ae5gS2o5l0woeiHUtUOtm+TyAwEh7E/bOAxp/FJvYKz3qbLxmrXnGTwu398HXS3skY4YTXyKKx7mGSwAjUNiMEZgX7tOAZb3g/JX7XIPKXsO1BEhYTPXX3QCZ3G9iISqGg3x4c/Gl2Xhu+RsxZeF/zXgeB4YzIi3NDF4FGwZWErYQZkQBxRdCxdXJdh3105Fsjcrjvs=
