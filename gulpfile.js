@@ -88,7 +88,7 @@ gulp.task('release:heroku', ['dist', 'release:createTmp'], function(done) {
                     args: '--all'
                   }))
                   .pipe(git.commit('Heroku version update.')).on('end', function() {
-                    git.push('origin', 'stable', { quiet: true }, function(err) {
+                    git.push('origin', 'heroku', { quiet: true }, function(err) {
                       if (err) {
                         throw err;
                       }
