@@ -135,7 +135,8 @@ export default class BlogSearch extends Component {
     return (
       <Article scrollStep={false}>
         <BlogHeader />
-        <Section pad={{ horizontal: 'large' }}>
+        <Section pad={{ horizontal: 'large' }}
+          primary={true}>
           <form onSubmit={event => event.preventDefault()}>
             <Search ref="search" iconAlign="start" inline={true}
               responsive={false} className="flex" fill={true}

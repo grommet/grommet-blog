@@ -20,7 +20,8 @@ if (asyncDataNode) {
 
 match({ history, routes }, (error, redirectLocation, renderProps) => {
   render(
-    <BlogContext renderProps={renderProps} asyncData={asyncData} />, element
+    <BlogContext renderProps={renderProps} asyncData={asyncData} />,
+    element
   );
 });
 
