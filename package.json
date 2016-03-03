@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "main": "src/js/index.js",
   "dependencies": {
+    "babel-plugin-array-includes": "^2.0.3",
+    "babel-plugin-transform-object-rest-spread": "^6.5.0",
+    "babel-register": "^6.5.2",
     "basic-auth-connect": "^1.0.0",
     "body-parser": "^1.10.0",
     "classnames": "^2.2.3",
@@ -27,9 +30,6 @@
   },
   "devDependencies": {
     "argv": "0.0.2",
-    "babel-plugin-array-includes": "^2.0.3",
-    "babel-plugin-transform-object-rest-spread": "^6.5.0",
-    "babel-register": "^6.5.2",
     "del": "^2.2.0",
     "gulp-git": "^1.7.0",
     "mkdirp": "^0.5.1"
