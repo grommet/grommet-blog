@@ -1,3 +1,0 @@
-Last week we spent three days evangelizing Grommet at Hewlett Packard Enterprise (HPE) Discover in London. Given it’s only been about six months since Grommet was publicly unveiled, our experience last week was highly encouraging.
-
-When Grommet was first announced at HP Discover Las Vegas in June 2015, our booth traffic was fairly light. Most people who came by were naturally unfamiliar with the platform and were surprised HP was doing something like Grommet. This time around in London, we talked with a great many more people. There were still some quizzical approaches but there was also much more interest and visible enthusiasm given we’ve been out in the wild for a bit now.
