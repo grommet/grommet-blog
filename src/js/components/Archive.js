@@ -126,7 +126,8 @@ export default class Archive extends Component {
     return (
       <Article scrollStep={false}>
         <BlogHeader />
-        <Section pad={{ horizontal: 'large' }}>
+        <Section pad={{ horizontal: 'large' }}
+          primary={true}>
           <Header><h1>Archive</h1></Header>
           {archiveNode}
         </Section>

@@ -93,7 +93,9 @@ export default class Home extends Component {
     return (
       <Article scrollStep={false}>
         <Header />
-        {postsNode}
+        <Box primary={true}>
+          {postsNode}
+        </Box>
         <Footer />
       </Article>
     );

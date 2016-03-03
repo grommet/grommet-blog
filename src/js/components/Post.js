@@ -9,10 +9,10 @@ import DisqusThread from 'react-disqus-thread';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Headline from 'grommet/components/Headline';
-import FacebookShare from './social/FacebookShare';
-import TwitterShare from './social/TwitterShare';
-import LinkedinShare from './social/LinkedinShare';
-import RedditShare from './social/RedditShare';
+import SocialFacebook from 'grommet/components/icons/base/SocialFacebook';
+import SocialTwitter from 'grommet/components/icons/base/SocialTwitter';
+import SocialLinkedin from 'grommet/components/icons/base/SocialLinkedin';
+import SocialReddit from 'grommet/components/icons/base/SocialReddit';
 
 import BlogHeader from './Header';
 import Footer from './Footer';
@@ -93,12 +93,31 @@ export default class Post extends Component {
             {post.author}
           </Link>
         </h3>
-        <Box responsive={false} direction="row">
-          <FacebookShare target={target} />
-          <TwitterShare target={target} />
-          <LinkedinShare target={target} />
-          <RedditShare target={target} />
-        </Box>
+        <div data-addthis-url={target}
+          data-addthis-title={post.title} className="addthis_toolbox">
+          <Box responsive={false} direction="row">
+            <Box pad={{horizontal: 'small'}}>
+              <a className="addthis_button_facebook" href="#" title="Facebook">
+                <SocialFacebook a11yTitle="Share on Facebook" />
+              </a>
+            </Box>
+            <Box pad={{horizontal: 'small'}}>
+              <a className="addthis_button_twitter" href="#" title="Twitter">
+                <SocialTwitter a11yTitle="Share on Twitter" />
+              </a>
+            </Box>
+            <Box pad={{horizontal: 'small'}}>
+              <a className="addthis_button_linkedin" href="#" title="Linkedin">
+                <SocialLinkedin a11yTitle="Share on Linkedin" />
+              </a>
+            </Box>
+            <Box pad={{horizontal: 'small'}}>
+              <a className="addthis_button_reddit" href="#" title="Reddit">
+                <SocialReddit a11yTitle="Share on Reddit" />
+              </a>
+            </Box>
+          </Box>
+        </div>
       </Box>
     );
   }
@@ -149,7 +168,9 @@ export default class Post extends Component {
     return (
       <Article scrollStep={false}>
         <BlogHeader />
-        {postNode}
+        <Box primary={true}>
+          {postNode}
+        </Box>
         {comment}
         <Footer />
       </Article>
