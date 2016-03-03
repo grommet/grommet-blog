@@ -43,6 +43,7 @@ export default class BlogSearch extends Component {
 
   componentDidMount () {
     setDocumentTitle('Search');
+    this.refs.search.focus();
     if (this.props.location.query.q) {
       store.search(this.props.location.query.q).then(
         this._onSearchResultsReceived, this._onSearchResultsFailed

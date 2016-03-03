@@ -1,4 +1,4 @@
-var argv = require('argv');
+var argv = require('yargs').argv;
 var del = require('del');
 var devGulpTasks = require('grommet/utils/gulp/gulp-tasks');
 var git = require('gulp-git');
@@ -28,6 +28,13 @@ var opts = {
   devServerPort: 9070,
   devServerProxy: {
     "/api/post/*": 'http://localhost:8070'
+  },
+  webpack: {
+    resolve: {
+      root: [
+        path.resolve(__dirname, './node_modules')
+      ]
+    }
   },
   alias: {
     'grommet/scss': path.resolve(__dirname, '../grommet/src/scss'),
