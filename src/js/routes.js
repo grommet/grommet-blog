@@ -6,6 +6,7 @@ import Archive from './components/Archive';
 import NotFound from './components/NotFound';
 import Post from './components/Post';
 import Search from './components/Search';
+import Manage from './components/manage/Manage';
 
 export default [
   { path: '/', component: Blog,
@@ -23,6 +24,7 @@ export default [
       },
       { path: 'post/*', component: Post },
       { path: 'search', component: Search },
+      { path: 'manage', component: Manage },
       { path: '*', component: NotFound }
     ]
   }
