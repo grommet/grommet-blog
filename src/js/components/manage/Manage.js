@@ -1,22 +1,24 @@
-// (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
-
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import { Link } from 'react-router';
 
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
-import Section from 'grommet/components/Section';
+import Footer from 'grommet/components/Footer';
 import Header from 'grommet/components/Header';
 import Label from 'grommet/components/Label';
+import Section from 'grommet/components/Section';
+import Tile from 'grommet/components/Tile';
+import Tiles from 'grommet/components/Tiles';
 
-import BlogHeader from './Header';
-import Footer from './Footer';
-import store from '../store';
+import EditIcon from 'grommet/components/icons/base/Edit';
 
-import { setDocumentTitle } from '../utils/blog';
+import ManageHeader from './Header';
+import BlogFooter from '../Footer';
+import store from '../../store';
 
-export default class Archive extends Component {
+import { setDocumentTitle } from '../../utils/blog';
+
+export default class Manage extends Component {
 
   /**
   * used by the server to achieve isomorphic with async data.
@@ -25,7 +27,7 @@ export default class Archive extends Component {
   */
   static fetchData (location, params, appContext) {
     store.addContext(appContext);
-    return store.getArchive(location.pathname);
+    return store.getArchive();
   }
 
   constructor () {
@@ -40,14 +42,14 @@ export default class Archive extends Component {
   }
 
   componentDidMount () {
-    setDocumentTitle('Archive');
-    store.getArchive(location.pathname).then(
+    setDocumentTitle('Manage');
+    store.getArchive().then(
       this._onArchiveReceived, this._onArchiveFailed
     );
   }
 
   componentWillReceiveProps () {
-    store.getArchive(location.pathname).then(
+    store.getArchive().then(
       this._onArchiveReceived, this._onArchiveFailed
     );
   }
@@ -68,36 +70,35 @@ export default class Archive extends Component {
     return Object.keys(this.archive).map((monthLabel, index) => {
       let posts = this.archive[monthLabel].map((post, index) => {
         let date = moment(post.createdAt);
-        let day = date.format('DD');
-        let month = date.format('MM');
-        let year = date.format('YYYY');
         let formattedDate = date.format(
           'MMMM D, YYYY'
         );
-        let formattedAuthor = post.author.replace(' ', '').toLowerCase();
         return (
-          <Box key={`post_${index}`} pad={{ vertical: 'small' }}>
-            <h2 className='post__title'>
-              <Link to={`/post/${post.id}`}>
-                {post.title}
-              </Link>
-            </h2>
-            <h3 className='post__title'>
-              Posted <Link to={`/archive/${year}/${month}/${day}`}>
-                {formattedDate}
-              </Link> by <Link to={`/archive/author/${formattedAuthor}`}>
-                {post.author}
-              </Link>
-            </h3>
-          </Box>
+          <Tile key={`post_${index}`} align='start' pad='small'
+            colorIndex={`neutral-${index + 1}`}>
+            <Header tag='h4' size='small' pad={{horizontal: 'small'}}>
+              <strong>{post.title}</strong>
+            </Header>
+            <Box pad={{horizontal: 'small'}}>
+              <p>
+                Posted {formattedDate} by {post.author}
+              </p>
+            </Box>
+            <Footer justify='end' pad='small'>
+              <Box pad={{horizontal: 'small'}}>
+                <EditIcon a11yTitle={`Edit ${post.title} post`} />
+              </Box>
+            </Footer>
+          </Tile>
         );
       });
 
       return (
-        <Box key={`month_group_${index}`} pad={{ vertical: 'small' }}
-          separator="top">
+        <Box key={`month_group_${index}`} separator='top'>
           <Label uppercase={true}>{monthLabel}</Label>
-          {posts}
+          <Tiles size='large' flush={false}>
+            {posts}
+          </Tiles>
         </Box>
       );
     });
@@ -121,22 +122,21 @@ export default class Archive extends Component {
 
     return (
       <Article scrollStep={false}>
-        <BlogHeader />
+        <ManageHeader />
         <Section pad={{ horizontal: 'large' }}
           primary={true}>
-          <Header><h1>Archive</h1></Header>
           {archiveNode}
         </Section>
-        <Footer />
+        <BlogFooter />
       </Article>
     );
   }
-};
+}
 
-Archive.propTypes = {
+Manage.propTypes = {
   params: PropTypes.object
 };
 
-Archive.contextTypes = {
+Manage.contextTypes = {
   asyncData: PropTypes.any
 };

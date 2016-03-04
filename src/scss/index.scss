@@ -1,11 +1,12 @@
 //for hpe theme, use the following import instead
+$readable-text-width: 960px;
+$paragraph-large-font-size: 18px;
+
 @import 'grommet/scss/vanilla/index';
 
 .post__title {
   margin: 2px;
 }
-
-$paragraph-large-font-size: 18px;
 
 .markdown__container {
   p {
@@ -13,6 +14,7 @@ $paragraph-large-font-size: 18px;
   }
 }
 
+.grommet a:not(.anchor):hover,
 a.post-link {
   &:hover {
     text-decoration: none;
