@@ -12,6 +12,8 @@ import Section from 'grommet/components/Section';
 import store from './store';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import Loading from './components/Loading';
+import Error from './components/Error';
 
 import { setDocumentTitle } from './utils/blog';
 
@@ -43,9 +45,11 @@ export default class Home extends Component {
     super();
 
     this._onPostsReceived = this._onPostsReceived.bind(this);
+    this._onPostsFailed = this._onPostsFailed.bind(this);
 
     this.state = {
-      posts: []
+      posts: [],
+      loading: true
     };
   }
 
@@ -59,36 +63,60 @@ export default class Home extends Component {
   }
 
   _onPostsReceived (posts) {
-    this.setState({ posts: posts });
+    this.setState({ posts: posts, loading: false });
   }
 
-  _onPostsFailed (err) {
-    //TODO: handle errors
-    console.log(err);
+  _onPostsFailed () {
+    this.setState({
+      posts: [],
+      loading: false,
+      error: 'Could not load posts. Make sure you have internet connection and try again.'
+    });
   }
 
   render () {
 
     this.posts = this.state.posts;
+    this.loading = this.state.loading;
     if (store.useContext() && this.context.asyncData) {
+      this.loading = false;
       this.posts = this.context.asyncData;
     }
 
-    let postsNode = this.posts.map((post, index) => {
-      let formattedDate = moment(post.createdAt).format(
-        'MMMM D, YYYY'
+    let postsNode;
+    let footerNode;
+    if (this.posts.length > 0) {
+      footerNode = (
+        <Footer />
       );
-      return (
-        <Link to={`/post/${post.id}`} key={`post_${index}`}
-          className='post-link'>
-          <HomeSection colorIndex="dark"
-            backgroundImage={`url(${post.coverImage})`}>
-            <Heading><strong>{post.title}</strong></Heading>
-            <h2>{`Posted ${formattedDate} by ${post.author}`}</h2>
-          </HomeSection>
-        </Link>
+      postsNode = this.posts.map((post, index) => {
+        let formattedDate = moment(post.createdAt).format(
+          'MMMM D, YYYY'
+        );
+        return (
+          <Link to={`/post/${post.id}`} key={`post_${index}`}
+            className='post-link'>
+            <HomeSection colorIndex="dark"
+              backgroundImage={`url(${post.coverImage})`}>
+              <Heading><strong>{post.title}</strong></Heading>
+              <h2>{`Posted ${formattedDate} by ${post.author}`}</h2>
+            </HomeSection>
+          </Link>
+        );
+      });
+    } else if (this.state.error) {
+      postsNode = (
+        <Error message={this.state.error} />
       );
-    });
+    } else if (!this.loading) {
+      postsNode = (
+        <h3>No posts have been found.</h3>
+      );
+    } else {
+      postsNode = (
+        <Loading />
+      );
+    }
 
     return (
       <Article scrollStep={false}>
@@ -96,7 +124,7 @@ export default class Home extends Component {
         <Box primary={true}>
           {postsNode}
         </Box>
-        <Footer />
+        {footerNode}
       </Article>
     );
   }

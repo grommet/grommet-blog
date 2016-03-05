@@ -37,7 +37,7 @@ export default class BlogFooter extends Component {
 
     return (
       <Footer size='small' appCentered={true} colorIndex='light-2'
-        direction='column'  primary={true}
+        direction='column' primary={true}
         pad={{horizontal: 'medium', vertical: 'medium', between: 'medium'}}>
         <Box direction='row' justify='between' align='center'>
           <GrommetLogo />
