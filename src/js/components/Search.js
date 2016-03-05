@@ -11,6 +11,8 @@ import Search from 'grommet/components/Search';
 
 import BlogHeader from './Header';
 import Footer from './Footer';
+import Loading from './Loading';
+import Error from './Error';
 import store from '../store';
 import history from '../RouteHistory';
 
@@ -33,11 +35,13 @@ export default class BlogSearch extends Component {
 
     this._onChange = this._onChange.bind(this);
     this._renderPosts = this._renderPosts.bind(this);
+    this._onSearchResultsFailed = this._onSearchResultsFailed.bind(this);
     this._onSearchResultsReceived = this._onSearchResultsReceived.bind(this);
 
     this.state = {
       value: '',
-      posts: undefined
+      posts: undefined,
+      searching: false
     };
   }
 
@@ -45,6 +49,7 @@ export default class BlogSearch extends Component {
     setDocumentTitle('Search');
     this.refs.search.focus();
     if (this.props.location.query.q) {
+      this.setState({searching: true, value: this.props.location.query.q });
       store.search(this.props.location.query.q).then(
         this._onSearchResultsReceived, this._onSearchResultsFailed
       );
@@ -63,26 +68,30 @@ export default class BlogSearch extends Component {
     }
 
     if (value.length > 2) {
+      this.setState({posts: undefined, searching: true, value: value});
       store.search(value).then(
         this._onSearchResultsReceived, this._onSearchResultsFailed
       );
     } else {
-      this.setState({ posts: undefined });
+      this.setState({ posts: undefined, searching: false, value: value });
     }
 
-    this.setState({ value: value });
   }
 
   _onSearchResultsReceived (posts) {
-    if (posts && posts.length === 0) {
-      posts = undefined;
-    }
-    this.setState({ posts: posts, value: this.props.location.query.q});
+    this.setState({
+      posts: posts || [],
+      value: this.props.location.query.q,
+      searching: false
+    });
   }
 
   _onSearchResultsFailed (err) {
-    //TODO: handle errors
-    console.log(err);
+    this.setState({
+      posts: [],
+      searching: false,
+      error: 'Could not load posts. Make sure you have internet connection and try again.'
+    });
   }
 
   _renderPosts () {
@@ -128,8 +137,26 @@ export default class BlogSearch extends Component {
     }
 
     let postsNode;
-    if (this.posts) {
+    let footerNode;
+    if (this.posts && this.posts.length > 0) {
       postsNode = this._renderPosts();
+      footerNode = (
+        <Footer />
+      );
+    } else if (this.state.error) {
+      postsNode = (
+        <Error message={this.state.error} />
+      );
+    } else if (this.posts && this.posts.length === 0) {
+      postsNode = (
+        <Box pad='small'>
+          <h3>No post found matching the search query.</h3>
+        </Box>
+      );
+    } else if (this.state.searching) {
+      postsNode = (
+        <Loading />
+      );
     }
 
     return (
@@ -146,7 +173,7 @@ export default class BlogSearch extends Component {
           </form>
           {postsNode}
         </Section>
-        <Footer />
+        {footerNode}
       </Article>
     );
   }

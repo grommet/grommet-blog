@@ -4,20 +4,34 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 
 import Box from 'grommet/components/Box';
-import Anchor from 'grommet/components/Anchor';
+import Button from 'grommet/components/Button';
 import Header from 'grommet/components/Header';
 import Title from 'grommet/components/Title';
 import GrommetLogo from 'grommet/components/icons/Grommet';
 
-import history from '../../RouteHistory';
-
 import Add from 'grommet/components/icons/base/Add';
+
+import AddPost from './AddPost';
 
 export default class BlogHeader extends Component {
 
-  _onAdd (event) {
-    event.preventDefault();
-    history.push('/manage/add');
+  constructor () {
+    super();
+
+    this._onRequestForAdd = this._onRequestForAdd.bind(this);
+    this._onRequestForClose = this._onRequestForClose.bind(this);
+
+    this.state = {
+      add: false
+    };
+  }
+
+  _onRequestForAdd () {
+    this.setState({ add: true });
+  }
+
+  _onRequestForClose () {
+    this.setState({ add: false });
   }
 
   render () {
@@ -31,19 +45,29 @@ export default class BlogHeader extends Component {
       </Link>
     );
 
+    let addLayer;
+    if (this.state.add) {
+      addLayer = (
+        <AddPost onClose={this._onRequestForClose}
+          onSubmit={this.props.onAddPost} />
+      );
+    }
     const add = (
-      <Anchor icon={<Add />} href="/manage/add"
-        onClick={this._onAdd} a11yTitle='Add Post' />
+      <Button icon={<Add />} onClick={this._onRequestForAdd}
+        a11yTitle='Add Post' />
     );
 
     return (
-      <Header appCentered={true} size="large" justify="between"
-        pad={{horizontal: 'medium', vertical: 'none'}}>
-        {logo}
-        <Box direction="row" responsive={false}>
-          {add}
-        </Box>
-      </Header>
+      <div>
+        <Header appCentered={true} size="large" justify="between"
+          pad={{horizontal: 'medium', vertical: 'none'}}>
+          {logo}
+          <Box direction="row" responsive={false}>
+            {add}
+          </Box>
+        </Header>
+        {addLayer}
+      </div>
     );
   }
 };

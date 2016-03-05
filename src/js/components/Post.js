@@ -16,6 +16,8 @@ import SocialReddit from 'grommet/components/icons/base/SocialReddit';
 
 import BlogHeader from './Header';
 import Footer from './Footer';
+import Loading from './Loading';
+import Error from './Error';
 
 import store from '../store';
 
@@ -37,11 +39,13 @@ export default class Post extends Component {
     super();
 
     this._onPostReceived = this._onPostReceived.bind(this);
+    this._onPostFailed = this._onPostFailed.bind(this);
     this._renderPost = this._renderPost.bind(this);
     this._renderPostHeader = this._renderPostHeader.bind(this);
 
     this.state = {
-      post: undefined
+      post: undefined,
+      loading: true
     };
   }
 
@@ -58,22 +62,29 @@ export default class Post extends Component {
   }
 
   _onPostReceived (post) {
-    setDocumentTitle(post.title);
-    this.setState({ post: post }, () => {
-      if (window.addthis) {
-        let target = (
-          `http://blog.grommet.io/${post.id}`
-        );
-        window.addthis_share.url = target;
-        window.addthis_share.title = post.title;
-        window.addthis.toolbox('.addthis_toolbox');
-      }
-    });
+    if (post) {
+      setDocumentTitle(post.title);
+      this.setState({ post: post, loading: false }, () => {
+        if (window.addthis) {
+          let target = (
+            `http://blog.grommet.io/${post.id}`
+          );
+          window.addthis_share.url = target;
+          window.addthis_share.title = post.title;
+          window.addthis.toolbox('.addthis_toolbox');
+        }
+      });
+    } else {
+      this.setState({ post: post, loading: false });
+    }
   }
 
-  _onPostFailed (err) {
-    //TODO: handle errors
-    console.log(err);
+  _onPostFailed () {
+    this.setState({
+      post: undefined,
+      loading: false,
+      error: 'Could not load post. Make sure you have internet connection and try again.'
+    });
   }
 
   _onSocialClick (event) {
@@ -96,7 +107,7 @@ export default class Post extends Component {
     );
 
     return (
-      <Box pad="large" colorIndex="neutral-2"
+      <Box pad='large' colorIndex='neutral-2'
         backgroundImage={`url(${post.coverImage})`}>
         <Headline><strong>{post.title}</strong></Headline>
         <h3>
@@ -107,30 +118,30 @@ export default class Post extends Component {
           </Link>
         </h3>
         <div data-addthis-url={target}
-          data-addthis-title={post.title} className="addthis_toolbox">
-          <Box responsive={false} direction="row">
+          data-addthis-title={post.title} className='addthis_toolbox'>
+          <Box responsive={false} direction='row'>
             <Box pad={{horizontal: 'small'}}>
-              <a className="addthis_button_facebook"
-                href="#" title="Facebook" onClick={this._onSocialClick}>
-                <SocialFacebook a11yTitle="Share on Facebook" />
+              <a className='addthis_button_facebook'
+                href='#' title='Facebook' onClick={this._onSocialClick}>
+                <SocialFacebook a11yTitle='Share on Facebook' />
               </a>
             </Box>
             <Box pad={{horizontal: 'small'}}>
-              <a className="addthis_button_twitter"
-                href="#" title="Twitter" onClick={this._onSocialClick}>
-                <SocialTwitter a11yTitle="Share on Twitter" />
+              <a className='addthis_button_twitter'
+                href='#' title='Twitter' onClick={this._onSocialClick}>
+                <SocialTwitter a11yTitle='Share on Twitter' />
               </a>
             </Box>
             <Box pad={{horizontal: 'small'}}>
-              <a className="addthis_button_linkedin"
-                href="#" title="Linkedin" onClick={this._onSocialClick}>
-                <SocialLinkedin a11yTitle="Share on Linkedin" />
+              <a className='addthis_button_linkedin'
+                href='#' title='Linkedin' onClick={this._onSocialClick}>
+                <SocialLinkedin a11yTitle='Share on Linkedin' />
               </a>
             </Box>
             <Box pad={{horizontal: 'small'}}>
-              <a className="addthis_button_reddit"
-                href="#" title="Reddit" onClick={this._onSocialClick}>
-                <SocialReddit a11yTitle="Share on Reddit" />
+              <a className='addthis_button_reddit'
+                href='#' title='Reddit' onClick={this._onSocialClick}>
+                <SocialReddit a11yTitle='Share on Reddit' />
               </a>
             </Box>
           </Box>
@@ -157,7 +168,7 @@ export default class Post extends Component {
   _renderComment () {
     return (
       <Box pad={{ horizontal: 'large' }}>
-        <DisqusThread shortname="grommet" identifier={this.post.id}
+        <DisqusThread shortname='grommet' identifier={this.post.id}
           title={this.post.title} />
       </Box>
     );
@@ -166,30 +177,43 @@ export default class Post extends Component {
   render () {
 
     this.post = this.state.post;
+    this.loading = this.state.loading;
     if (store.useContext() && this.context.asyncData) {
+      this.loading = false;
       this.post = this.context.asyncData;
     }
 
     let postNode;
-    let comment;
     if (this.post) {
       postNode = (
-        this._renderPost()
+        <div>
+          <Box primary={true}>
+            {this._renderPost()}
+          </Box>
+          {this._renderComment()}
+          <Footer />
+        </div>
       );
-
-      comment = (
-        this._renderComment()
+    } else if (this.state.error) {
+      postNode = (
+        <Error message={this.state.error} />
+      );
+    } else if (!this.loading) {
+      postNode = (
+        <Box pad={{vertical: 'small', horizontal: 'large'}}>
+          <h3>No post has been found.</h3>
+        </Box>
+      );
+    } else {
+      postNode = (
+        <Loading />
       );
     }
 
     return (
       <Article scrollStep={false}>
         <BlogHeader />
-        <Box primary={true}>
-          {postNode}
-        </Box>
-        {comment}
-        <Footer />
+        {postNode}
       </Article>
     );
   }

@@ -7,11 +7,13 @@ import { Link } from 'react-router';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Section from 'grommet/components/Section';
-import Header from 'grommet/components/Header';
+import Heading from 'grommet/components/Heading';
 import Label from 'grommet/components/Label';
 
 import BlogHeader from './Header';
 import Footer from './Footer';
+import Loading from './Loading';
+import Error from './Error';
 import store from '../store';
 
 import { setDocumentTitle } from '../utils/blog';
@@ -32,10 +34,12 @@ export default class Archive extends Component {
     super();
 
     this._onArchiveReceived = this._onArchiveReceived.bind(this);
+    this._onArchiveFailed = this._onArchiveFailed.bind(this);
     this._renderArchive = this._renderArchive.bind(this);
 
     this.state = {
-      archive: undefined
+      archive: undefined,
+      loading: true
     };
   }
 
@@ -56,12 +60,15 @@ export default class Archive extends Component {
     if (archive && Object.keys(archive).length === 0) {
       archive = undefined;
     }
-    this.setState({ archive: archive });
+    this.setState({ archive: archive, loading: false });
   }
 
-  _onArchiveFailed (err) {
-    //TODO: handle errors
-    console.log(err);
+  _onArchiveFailed () {
+    this.setState({
+      archive: undefined,
+      loading: false,
+      error: 'Could not load posts. Make sure you have internet connection and try again.'
+    });
   }
 
   _renderArchive () {
@@ -106,16 +113,30 @@ export default class Archive extends Component {
   render () {
 
     this.archive = this.state.archive;
+    this.loading = this.state.loading;
     if (store.useContext() && this.context.asyncData) {
+      this.loading = false;
       this.archive = this.context.asyncData;
     }
 
     let archiveNode;
+    let footerNode;
     if (this.archive) {
+      footerNode = (
+        <Footer />
+      );
       archiveNode = this._renderArchive();
-    } else {
+    } else if (this.state.error) {
+      archiveNode = (
+        <Error message={this.state.error} />
+      );
+    } else if (!this.loading) {
       archiveNode = (
         <h3>No posts have been found.</h3>
+      );
+    } else {
+      archiveNode = (
+        <Loading />
       );
     }
 
@@ -124,10 +145,10 @@ export default class Archive extends Component {
         <BlogHeader />
         <Section pad={{ horizontal: 'large' }}
           primary={true}>
-          <Header><h1>Archive</h1></Header>
+          <Heading tag="h2" strong={true}>Archive</Heading>
           {archiveNode}
         </Section>
-        <Footer />
+        {footerNode}
       </Article>
     );
   }
