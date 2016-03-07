@@ -1,6 +1,7 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
 
 import compression from 'compression';
+import timeout from 'connect-timeout';
 import express from 'express';
 import http from 'http';
 import morgan from 'morgan';
@@ -35,6 +36,7 @@ app.use(compression());
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
 app.use(busboyBodyParser());
+app.use(timeout('1min'));
 
 function routerProcessor (req, res, next) {
   if (/\..*$/.test(req.url)) {
