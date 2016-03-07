@@ -1,7 +1,24 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
 
 import path from 'path';
-import simpleGit from 'simple-git';
+
+//TODO: temporary
+import Git from 'simple-git/src/git';
+Git.prototype.addConfig = function (key, value, then) {
+  return this._run(['config', '--local', key, value], function (err, data) {
+    if (then) {
+      let cb =  this._parseCheckout(data);
+      then(err, !err && cb);
+    }
+  });
+};
+import ChildProcess from 'child_process';
+import { Buffer } from 'buffer';
+
+let simpleGit = function (baseDir) {
+  return new Git(baseDir || process.cwd(), ChildProcess, Buffer);
+};
+
 import GitHubApi from 'github';
 import del from 'del';
 
@@ -37,7 +54,6 @@ export default class GithubPostDAO extends PostDAO {
   }
 
   _createPullRequest () {
-    console.log('###', 'GithubPostDAO._createPullRequest');
     github.pullRequests.create({
       user: 'grommet',
       repo: 'grommet-blog',
@@ -54,12 +70,13 @@ export default class GithubPostDAO extends PostDAO {
   }
 
   _commitAndPushPost () {
-    console.log('###', 'GithubPostDAO._commitAndPushPost');
     return simpleGit(root)
      .outputHandler(function (command, stdout, stderr) {
        stdout.pipe(process.stdout);
        stderr.pipe(process.stderr);
      })
+     .addConfig('user.name', 'grommet-github-bot')
+     .addConfig('user.email', 'asouza@hpe.com')
      .add(`server/posts/${this.postFolderName}`)
      .commit(`Add new post: ${this.postFolderName}`)
      .push('origin', this.postFolderName)
