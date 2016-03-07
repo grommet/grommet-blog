@@ -65,5 +65,23 @@ export default {
 
   setUseContext (context) {
     useContext = context;
+  },
+
+  addPost (post) {
+    return new Promise((resolve, reject) => {
+      Rest.post(`${appContext}/api/post/`)
+      .field('title', post.title)
+      .field('author', post.author)
+      .field('tags', post.tags || '')
+      .field('content', post.content)
+      .attach('coverImage', post.coverImage)
+      .end((err, res) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res.body);
+        }
+      });
+    });
   }
 };

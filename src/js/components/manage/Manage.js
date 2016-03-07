@@ -5,6 +5,7 @@ import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Footer from 'grommet/components/Footer';
 import Heading from 'grommet/components/Heading';
+import Notification from 'grommet/components/Notification';
 import Label from 'grommet/components/Label';
 import Section from 'grommet/components/Section';
 import Tile from 'grommet/components/Tile';
@@ -13,6 +14,8 @@ import Tiles from 'grommet/components/Tiles';
 import EditIcon from 'grommet/components/icons/base/Edit';
 
 import ManageHeader from './Header';
+import AddPost from './AddPost';
+
 import Error from '../Error';
 import Loading from '../Loading';
 import BlogFooter from '../Footer';
@@ -38,11 +41,16 @@ export default class Manage extends Component {
     this._onArchiveReceived = this._onArchiveReceived.bind(this);
     this._onArchiveFailed = this._onArchiveFailed.bind(this);
     this._renderArchive = this._renderArchive.bind(this);
+    this._onRequestToAdd = this._onRequestToAdd.bind(this);
+    this._onRequestToClose = this._onRequestToClose.bind(this);
     this._onAddPost = this._onAddPost.bind(this);
+    this._onAddPostSucceed = this._onAddPostSucceed.bind(this);
+    this._onAddPostFailed = this._onAddPostFailed.bind(this);
 
     this.state = {
       archive: undefined,
-      loading: true
+      loading: true,
+      add: false
     };
   }
 
@@ -75,7 +83,36 @@ export default class Manage extends Component {
   }
 
   _onAddPost (post) {
-    console.log(post);
+    store.addPost(post).then(
+      this._onAddPostSucceed, this._onAddPostFailed
+    );
+  }
+
+  _onAddPostSucceed () {
+    this.setState({
+      add: false,
+      success: 'The post has been successfully created. Please allow some time for it to be live.'
+    });
+  }
+
+  _onAddPostFailed () {
+    this.setState({
+      error: 'Could not add post, please try again.'
+    });
+  }
+
+  _onRequestToAdd () {
+    this.setState({
+      add: true,
+      success: undefined
+    });
+  }
+
+  _onRequestToClose () {
+    this.setState({
+      add: false,
+      error: undefined
+    });
   }
 
   _renderArchive () {
@@ -154,15 +191,35 @@ export default class Manage extends Component {
       );
     }
 
+    let addLayer;
+    if (this.state.add) {
+      addLayer = (
+        <AddPost onClose={this._onRequestToClose}
+          onSubmit={this._onAddPost} error={this.state.error} />
+      );
+    }
+
+    let successNode;
+    if (this.state.success) {
+      successNode = (
+        <Box pad={{ vertical: 'small' }}>
+          <Notification status="ok"
+            message={this.state.success} />
+        </Box>
+      );
+    }
+
     return (
       <Article scrollStep={false}>
-        <ManageHeader onAddPost={this._onAddPost} />
+        <ManageHeader onRequestToAdd={this._onRequestToAdd} />
         <Section pad={{ horizontal: 'large' }}
           primary={true}>
           <Heading tag="h2" strong={true}>Manage</Heading>
+          {successNode}
           {archiveNode}
         </Section>
         {footerNode}
+        {addLayer}
       </Article>
     );
   }
