@@ -59,19 +59,19 @@ export default class GithubPostDAO extends PostDAO {
      .add(`server/posts/${this.postFolderName}`)
      .commit(`Add new post: ${this.postFolderName}`)
      .push('origin', this.postFolderName)
-     .then(this._createPullRequest);
+     .then(this._createPullRequest, this.doneReject);
   }
 
   _addPost () {
     console.log('###', 'GithubPostDAO._addPost');
-    return super.add(root).then(this._commitAndPushPost);
+    return super.add(root).then(this._commitAndPushPost, this.doneReject);
   }
 
   _createNewBrach (repository) {
     console.log('###', 'GithubPostDAO._createNewBrach');
     return simpleGit(root).checkoutBranch(
       this.postFolderName, 'master'
-    ).then(this._addPost);
+    ).then(this._addPost, this.doneReject);
   }
 
   add () {
@@ -83,7 +83,7 @@ export default class GithubPostDAO extends PostDAO {
       return simpleGit().clone(
         `https://${TOKEN}@github.com/grommet/grommet-blog.git`,
         root
-      ).then(this._createNewBrach);
+      ).then(this._createNewBrach, this.doneReject);
     });
   }
 }
