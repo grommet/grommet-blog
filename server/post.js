@@ -7,7 +7,8 @@ import {
   loadPosts,
   postsMonthMap,
   filterPostsMapByMonth,
-  buildSearchIndex
+  buildSearchIndex,
+  addPost
 } from './utils/post';
 
 const router = Router();
@@ -24,6 +25,17 @@ function pick(map, match) {
     )
   ));
 }
+
+router.post('/', function (req, res) {
+  let metadata = Object.assign({}, req.body);
+  delete metadata.content;
+  metadata.tags = metadata.tags.split(',').map((tag) => tag.trim());
+
+  addPost(req.body.content, metadata, req.files.coverImage).then(
+    () => res.sendStatus(200),
+    (err) => res.status(500).json({ error: err.toString() })
+  );
+});
 
 router.get('/', function (req, res) {
   res.send(posts);

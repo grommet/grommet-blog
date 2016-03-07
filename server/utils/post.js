@@ -6,6 +6,8 @@ import glob from 'glob';
 import moment from 'moment';
 import lunr from 'lunr';
 
+import GithubPostDAO from '../persistance/GithubPostDAO';
+
 export function loadPosts () {
   const root = path.resolve(__dirname, '../posts');
   let posts = [];
@@ -83,4 +85,17 @@ export function buildSearchIndex (posts) {
   posts.forEach((post) => index.add(post));
 
   return index;
+}
+
+export function addPost (content, metadata, coverImage) {
+  const titleId = metadata.title.replace(/ /g, '-').toLowerCase();
+
+  const today = moment();
+  const idDateFormat = today.format('YYYY/MM/DD');
+  const folderDateFormat = today.format('YYYY-MM-DD');
+
+  metadata.id = `${idDateFormat}/${titleId}`;
+  const postFolderName = `${folderDateFormat}__${titleId}`;
+
+  return new GithubPostDAO(postFolderName, content, metadata, coverImage).add();
 }

@@ -2,18 +2,22 @@
 
 import React, { Component } from 'react';
 
+import Box from 'grommet/components/Box';
 import Button from 'grommet/components/Button';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
 import Footer from 'grommet/components/Footer';
+import Notification from 'grommet/components/Notification';
 import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
 import Layer from 'grommet/components/Layer';
 
-export default class TodoAddTaskForm extends Component {
-  constructor () {
-    super();
+import SpinningIcon from 'grommet/components/icons/Spinning';
+
+export default class AddPost extends Component {
+  constructor (props) {
+    super(props);
 
     this._onSubmit = this._onSubmit.bind(this);
     this._onTitleChange = this._onTitleChange.bind(this);
@@ -22,12 +26,23 @@ export default class TodoAddTaskForm extends Component {
     this._onContentChange = this._onContentChange.bind(this);
 
     this.state = {
-      errors: {}
+      errors: {},
+      error: props.error
     };
+  }
+
+  componentWillReceiveProps (newProps) {
+    this.setState({
+      error: newProps.error
+    });
   }
 
   _onSubmit (event) {
     event.preventDefault();
+
+    this.setState({
+      error: undefined
+    });
 
     let errors = {};
     let noErrors = true;
@@ -49,10 +64,12 @@ export default class TodoAddTaskForm extends Component {
       noErrors = false;
     }
     if (noErrors) {
+      this.setState({ adding: true });
       this.props.onSubmit({
         title: this.state.title,
         author: this.state.author,
         content: this.state.content,
+        tags: this.state.tags,
         coverImage: coverImage
       });
     } else {
@@ -77,7 +94,34 @@ export default class TodoAddTaskForm extends Component {
   }
 
   render () {
-    const { errors } = this.state;
+    const { errors, error } = this.state;
+
+    let errorNode;
+    if (error) {
+      errorNode = (
+        <Box pad={{ vertical: 'small' }}>
+          <Notification status="critical"
+            message={this.state.error} size='small' />
+        </Box>
+      );
+    }
+
+    let buttonNode = (
+      <Button label="Add" primary={true}
+        onClick={this._onSubmit} type="submit"/>
+    );
+    if (this.state.adding && !error) {
+      buttonNode = (
+        <Box direction="row">
+          <Box justify="center">
+            <SpinningIcon />
+          </Box>
+          <Box pad={{ horizontal: 'small' }}>
+            <span>Adding...</span>
+          </Box>
+        </Box>
+      );
+    }
 
     return (
       <Layer onClose={this.props.onClose} closer={true} align="right"
@@ -86,6 +130,7 @@ export default class TodoAddTaskForm extends Component {
           <Header size='large'>
             <Heading tag='h2' strong={true}>Add Post</Heading>
           </Header>
+          {errorNode}
           <FormFields>
             <fieldset>
               <FormField label="Title" htmlFor="titleInput"
@@ -116,8 +161,7 @@ export default class TodoAddTaskForm extends Component {
             </fieldset>
           </FormFields>
           <Footer pad={{vertical: 'medium'}}>
-            <Button label="Add" primary={true}
-              onClick={this._onSubmit} type="submit"/>
+            {buttonNode}
           </Footer>
         </Form>
       </Layer>

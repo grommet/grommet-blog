@@ -5,6 +5,7 @@ import express from 'express';
 import http from 'http';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
+import busboyBodyParser from 'busboy-body-parser';
 import path from 'path';
 import post from './post';
 import React from 'react';
@@ -33,6 +34,7 @@ app.set('view engine', 'ejs');
 app.use(compression());
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
+app.use(busboyBodyParser());
 
 function routerProcessor (req, res, next) {
   if (/\..*$/.test(req.url)) {
