@@ -37,6 +37,7 @@ export default class GithubPostDAO extends PostDAO {
   }
 
   _createPullRequest () {
+    console.log('###', 'GithubPostDAO._createPullRequest');
     github.pullRequests.create({
       user: 'grommet',
       repo: 'grommet-blog',
@@ -53,6 +54,7 @@ export default class GithubPostDAO extends PostDAO {
   }
 
   _commitAndPushPost () {
+    console.log('###', 'GithubPostDAO._commitAndPushPost');
     return simpleGit(root)
      .add(`server/posts/${this.postFolderName}`)
      .commit(`Add new post: ${this.postFolderName}`)
@@ -61,16 +63,19 @@ export default class GithubPostDAO extends PostDAO {
   }
 
   _addPost () {
+    console.log('###', 'GithubPostDAO._addPost');
     return super.add(root).then(this._commitAndPushPost);
   }
 
   _createNewBrach (repository) {
+    console.log('###', 'GithubPostDAO._createNewBrach');
     return simpleGit(root).checkoutBranch(
       this.postFolderName, 'master'
     ).then(this._addPost);
   }
 
   add () {
+    console.log('###', 'GithubPostDAO.add');
     return new Promise((resolve, reject) => {
       del.sync([root], { force: true });
       this.doneResolve = resolve;
