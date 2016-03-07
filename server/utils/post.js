@@ -7,6 +7,7 @@ import moment from 'moment';
 import lunr from 'lunr';
 
 import GithubPostDAO from '../persistance/GithubPostDAO';
+import PostDAO from '../persistance/PostDAO';
 
 export function loadPosts () {
   const root = path.resolve(__dirname, '../posts');
@@ -97,5 +98,15 @@ export function addPost (content, metadata, coverImage) {
   metadata.id = `${idDateFormat}/${titleId}`;
   const postFolderName = `${folderDateFormat}__${titleId}`;
 
-  return new GithubPostDAO(postFolderName, content, metadata, coverImage).add();
+  if (process.env.BLOG_PERSISTANCE === 'github') {
+    return new GithubPostDAO(postFolderName, content, metadata, coverImage).add();
+  } else {
+    return new PostDAO(postFolderName, content, metadata, coverImage).add(
+      path.resolve(path.join(__dirname, '../../'))
+    );
+  }
+}
+
+export function getPendingPosts () {
+  return new GithubPostDAO().getPending();
 }

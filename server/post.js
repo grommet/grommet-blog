@@ -1,6 +1,7 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development LP
 
 import express, { Router } from 'express';
+import basicAuth from 'basic-auth-connect';
 import moment from 'moment';
 import path from 'path';
 import {
@@ -8,15 +9,15 @@ import {
   postsMonthMap,
   filterPostsMapByMonth,
   buildSearchIndex,
-  addPost
+  addPost,
+  getPendingPosts
 } from './utils/post';
 
 const router = Router();
 
-const posts = loadPosts();
-const postsByMonth = postsMonthMap(posts);
-
-const searchIndex = buildSearchIndex(posts);
+let posts = loadPosts();
+let postsByMonth = postsMonthMap(posts);
+let searchIndex = buildSearchIndex(posts);
 
 function pick(map, match) {
   return Object.assign({}, ...(
@@ -26,13 +27,26 @@ function pick(map, match) {
   ));
 }
 
-router.post('/', function (req, res) {
+const USER = process.env.GH_USER || 'grommet';
+const USER_PASSWORD = process.env.USER_PASSWORD || 'admin';
+
+const auth = basicAuth(USER, USER_PASSWORD);
+
+router.post('/', auth, function (req, res) {
   let metadata = Object.assign({}, req.body);
   delete metadata.content;
   metadata.tags = metadata.tags.split(',').map((tag) => tag.trim());
 
   addPost(req.body.content, metadata, req.files.coverImage).then(
-    () => res.sendStatus(200),
+    () => {
+      if (process.env.BLOG_PERSISTANCE !== 'github') {
+        posts = loadPosts();
+        postsByMonth = postsMonthMap(posts);
+        searchIndex = buildSearchIndex(posts);
+      }
+
+      res.sendStatus(200);
+    },
     (err) => res.status(500).json({ error: err.toString() })
   );
 });
@@ -43,6 +57,21 @@ router.get('/', function (req, res) {
 
 router.get('/archive/', function (req, res) {
   res.send(postsByMonth);
+});
+
+router.get('/manage/', auth, function (req, res) {
+  if (process.env.BLOG_PERSISTANCE === 'github') {
+    getPendingPosts().then(
+      (pendingPosts) => {
+        let allPosts = [...posts, ...pendingPosts];
+        res.send(postsMonthMap(allPosts));
+      },
+      (err) => res.status(500).json({ error: err.toString() })
+    );
+  } else {
+    res.send(postsByMonth);
+  }
+
 });
 
 router.get('/search/', function (req, res) {
