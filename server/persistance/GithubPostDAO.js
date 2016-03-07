@@ -4,6 +4,7 @@ import path from 'path';
 import simpleGit from 'simple-git';
 import GitHubApi from 'github';
 import del from 'del';
+import fs from 'fs';
 
 import PostDAO from './PostDAO';
 
@@ -67,8 +68,10 @@ export default class GithubPostDAO extends PostDAO {
     return super.add(root).then(this._commitAndPushPost, this.doneReject);
   }
 
-  _createNewBrach (repository) {
+  _createNewBrach () {
     console.log('###', 'GithubPostDAO._createNewBrach');
+    console.log('###', fs.existsSync(root));
+    console.log('###', fs.existsSync(path.join(root, 'gulpfile.js')));
     return simpleGit(root).checkoutBranch(
       this.postFolderName, 'master'
     ).then(this._addPost, this.doneReject);
