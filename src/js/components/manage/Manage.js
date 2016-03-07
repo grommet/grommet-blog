@@ -12,6 +12,7 @@ import Tile from 'grommet/components/Tile';
 import Tiles from 'grommet/components/Tiles';
 
 import EditIcon from 'grommet/components/icons/base/Edit';
+import StatusIcon from 'grommet/components/icons/Status';
 
 import ManageHeader from './Header';
 import AddPost from './AddPost';
@@ -32,7 +33,7 @@ export default class Manage extends Component {
   */
   static fetchData (location, params, appContext) {
     store.addContext(appContext);
-    return store.getArchive();
+    return store.getArchive('/manage');
   }
 
   constructor () {
@@ -56,13 +57,13 @@ export default class Manage extends Component {
 
   componentDidMount () {
     setDocumentTitle('Manage');
-    store.getArchive().then(
+    store.getArchive('/manage').then(
       this._onArchiveReceived, this._onArchiveFailed
     );
   }
 
   componentWillReceiveProps () {
-    store.getArchive().then(
+    store.getArchive('/manage').then(
       this._onArchiveReceived, this._onArchiveFailed
     );
   }
@@ -89,6 +90,10 @@ export default class Manage extends Component {
   }
 
   _onAddPostSucceed () {
+    store.getArchive('/manage').then(
+      this._onArchiveReceived, this._onArchiveFailed
+    );
+
     this.setState({
       add: false,
       success: 'The post has been successfully created. Please allow some time for it to be live.'
@@ -127,9 +132,30 @@ export default class Manage extends Component {
         //pick a range from 0 - 4 based on the current index.
         let colorIndex = Math.round(index * 4 / monthKeys.length);
 
+        let footerNode = (
+          <Box pad={{horizontal: 'small'}}>
+            <EditIcon a11yTitle={`Edit ${post.title} post`} />
+          </Box>
+        );
+
+        let colorIndexProp = `neutral-${colorIndex + 1}`;
+        if (post.pending) {
+          colorIndexProp = 'disabled';
+          footerNode = (
+            <Box pad={{horizontal: 'small'}} direction="row" responsive={false}>
+              <Box justify='center'>
+                <StatusIcon value='warning' />
+              </Box>
+              <Box justify='center'>
+                <span>Pending Approval</span>
+              </Box>
+            </Box>
+          );
+        }
+
         return (
           <Tile key={`post_${index}`} align='start' pad='small'
-            colorIndex={`neutral-${colorIndex + 1}`}>
+            colorIndex={colorIndexProp}>
             <Box pad='small'>
               <Heading tag='h4' strong={true}>
                 {post.title}
@@ -141,9 +167,7 @@ export default class Manage extends Component {
               </p>
             </Box>
             <Footer justify='end' pad='small'>
-              <Box pad={{horizontal: 'small'}}>
-                <EditIcon a11yTitle={`Edit ${post.title} post`} />
-              </Box>
+              {footerNode}
             </Footer>
           </Tile>
         );

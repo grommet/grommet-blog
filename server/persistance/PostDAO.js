@@ -72,4 +72,20 @@ export default class PostDAO {
       mkdirp(this.postFolder, this._addMetadata);
     });
   }
+
+  get (root, file) {
+    return new Promise((resolve, reject) => {
+      fs.readFile(
+        path.join(root, `server/posts/${file}`),
+        'utf8',
+        (err, post) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(JSON.parse(post));
+          }
+        }
+      );
+    });
+  }
 };
