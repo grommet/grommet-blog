@@ -1,5 +1,6 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
 
+import basicAuth from 'basic-auth-connect';
 import compression from 'compression';
 import express from 'express';
 import http from 'http';
@@ -27,6 +28,11 @@ let styles = sass.renderSync({
 }).css;
 
 const PORT = process.env.PORT || 8070;
+
+const USER = process.env.GH_USER || 'grommet';
+const USER_PASSWORD = process.env.USER_PASSWORD || 'admin';
+
+const auth = basicAuth(USER, USER_PASSWORD);
 
 const app = express();
 app.set('views', path.resolve(__dirname, 'views'));
@@ -129,6 +135,7 @@ function routerProcessor (req, res, next) {
   }
 }
 
+app.use('/manage', auth);
 app.use('/api/post', post);
 app.use('/', routerProcessor);
 app.use('/', express.static(path.join(__dirname, '/../dist')));
