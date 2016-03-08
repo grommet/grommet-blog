@@ -59,7 +59,7 @@ router.get('/archive/', function (req, res) {
   res.send(postsByMonth);
 });
 
-router.get('/manage/', auth, function (req, res) {
+router.get('/manage/', function (req, res) {
   if (process.env.BLOG_PERSISTANCE === 'github') {
     getPendingPosts().then(
       (pendingPosts) => {
