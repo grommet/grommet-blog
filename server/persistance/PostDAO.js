@@ -20,7 +20,7 @@ export default class PostDAO {
   _addCover (err) {
     if (err) {
       this.reject(err);
-    } else {
+    } else if (this.coverImage) {
       let extension = this.coverImage.name.split('.')[1];
       let coverFile = path.join(this.postFolder, `cover.${extension}`);
       fs.writeFile(
@@ -34,6 +34,8 @@ export default class PostDAO {
           }
         }
       );
+    } else {
+      this.resolve();
     }
   }
 

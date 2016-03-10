@@ -109,7 +109,10 @@ function routerProcessor (req, res, next) {
 
             const keywords = (post.tags || []).join(' ');
 
-            blogMetadata.blogImage = post.coverImage;
+            if (post.coverImage) {
+              blogMetadata.blogImage = post.coverImage;
+            }
+
             blogMetadata.blogPage = post.id;
             blogMetadata.blogKeywords = keywords;
             blogMetadata.blogDescription = post.content.split('\n')[0];
