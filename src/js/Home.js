@@ -93,11 +93,18 @@ export default class Home extends Component {
         let formattedDate = moment(post.createdAt).format(
           'MMMM D, YYYY'
         );
+
+        let backgroundOptions = {};
+        if (post.coverImage) {
+          backgroundOptions.backgroundImage = `url(${post.coverImage})`;
+        } else {
+          backgroundOptions.colorIndex = 'grey-2';
+        }
+
         return (
           <Link to={`/post/${post.id}`} key={`post_${index}`}
             className='post-link'>
-            <HomeSection colorIndex="dark"
-              backgroundImage={`url(${post.coverImage})`}>
+            <HomeSection colorIndex="dark" {...backgroundOptions}>
               <Heading><strong>{post.title}</strong></Heading>
               <h2>{`Posted ${formattedDate} by ${post.author}`}</h2>
             </HomeSection>

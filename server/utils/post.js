@@ -22,8 +22,13 @@ export function loadPosts () {
       const metadata = JSON.parse(fs.readFileSync(metadataFilename, 'utf8'));
       const content = fs.readFileSync(contentFilename, 'utf8');
 
+      let coverImagePath;
+      if (imageFilename) {
+        coverImagePath = `/api/post/img/${postFolder}/${imageFilename}`;
+      }
+
       posts.push({
-        coverImage: `/api/post/img/${postFolder}/${imageFilename}`,
+        coverImage: coverImagePath,
         content: content,
         ...metadata
       });

@@ -69,13 +69,17 @@ export default {
 
   addPost (post) {
     return new Promise((resolve, reject) => {
-      Rest.post(`${appContext}/api/post/`)
+      let postRest = Rest.post(`${appContext}/api/post/`)
       .field('title', post.title)
       .field('author', post.author)
       .field('tags', post.tags || '')
-      .field('content', post.content)
-      .attach('coverImage', post.coverImage)
-      .end((err, res) => {
+      .field('content', post.content);
+
+      if (post.coverImage) {
+        postRest.attach('coverImage', post.coverImage);
+      }
+
+      postRest.end((err, res) => {
         if (err) {
           reject(err);
         } else {

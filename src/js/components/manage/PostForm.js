@@ -19,10 +19,7 @@ import SpinningIcon from 'grommet/components/icons/Spinning';
 import ManageHeader from './Header';
 import BlogFooter from '../Footer';
 
-import store from '../../store';
-import history from '../../RouteHistory';
-
-export default class ManageAdd extends Component {
+export default class PostForm extends Component {
   constructor (props) {
     super(props);
 
@@ -31,13 +28,24 @@ export default class ManageAdd extends Component {
     this._onAuthorChange = this._onAuthorChange.bind(this);
     this._onTagsChange = this._onTagsChange.bind(this);
     this._onContentChange = this._onContentChange.bind(this);
-    this._onAddPostSucceed = this._onAddPostSucceed.bind(this);
-    this._onAddPostFailed = this._onAddPostFailed.bind(this);
 
     this.state = {
       errors: {},
-      error: props.error
+      error: props.error,
+      adding: false
     };
+
+    if (props.post) {
+      this.state.post = props.post;
+    } else {
+      this.state.post = {
+        title: undefined,
+        author: undefined,
+        content: undefined,
+        tags: undefined,
+        coverImage: undefined
+      };
+    }
   }
 
   componentWillReceiveProps (newProps) {
@@ -56,64 +64,51 @@ export default class ManageAdd extends Component {
     let errors = {};
     let noErrors = true;
     let coverImage = this.refs.coverImage.files[0];
-    if (!coverImage) {
-      errors.coverImage = 'required';
-      noErrors = false;
-    }
-    if (!this.state.title || this.state.title === '') {
+    if (!this.state.post.title || this.state.post.title === '') {
       errors.title = 'required';
       noErrors = false;
     }
-    if (!this.state.author || this.state.author === '') {
+    if (!this.state.post.author || this.state.post.author === '') {
       errors.author = 'required';
       noErrors = false;
     }
-    if (!this.state.content || this.state.content === '') {
+    if (!this.state.post.content || this.state.post.content === '') {
       errors.content = 'required';
       noErrors = false;
     }
     if (noErrors) {
       this.setState({ adding: true });
-      const post = {
-        title: this.state.title,
-        author: this.state.author,
-        content: this.state.content,
-        tags: this.state.tags,
-        coverImage: coverImage
-      };
+      let post = {...this.state.post};
+      post.coverImage = coverImage;
 
-      store.addPost(post).then(
-        this._onAddPostSucceed, this._onAddPostFailed
-      );
+      this.props.onSubmit(post);
     } else {
       this.setState({ errors: errors });
     }
   }
 
-  _onAddPostSucceed () {
-    history.push('/manage');
-  }
-
-  _onAddPostFailed () {
-    this.setState({
-      error: 'Could not add post, please try again.'
-    });
-  }
-
   _onTitleChange (event) {
-    this.setState({title: event.target.value});
+    let post = { ...this.state.post };
+    post.title = event.target.value;
+    this.setState({post: post});
   }
 
   _onAuthorChange (event) {
-    this.setState({author: event.target.value});
+    let post = { ...this.state.post };
+    post.author = event.target.value;
+    this.setState({post: post});
   }
 
   _onTagsChange (event) {
-    this.setState({tags: event.target.value});
+    let post = { ...this.state.post };
+    post.tags = event.target.value;
+    this.setState({post: post});
   }
 
   _onContentChange (event) {
-    this.setState({content: event.target.value});
+    let post = { ...this.state.post };
+    post.content = event.target.value;
+    this.setState({post: post});
   }
 
   render () {
@@ -130,7 +125,7 @@ export default class ManageAdd extends Component {
     }
 
     let buttonNode = (
-      <Button label="Add" primary={true}
+      <Button label={this.props.submitLabel} primary={true}
         onClick={this._onSubmit} type="submit"/>
     );
 
@@ -141,7 +136,7 @@ export default class ManageAdd extends Component {
             <SpinningIcon />
           </Box>
           <Box pad={{ horizontal: 'small' }}>
-            <span>Adding...</span>
+            <span>{this.props.busyMessage}...</span>
           </Box>
         </Box>
       );
@@ -154,7 +149,9 @@ export default class ManageAdd extends Component {
           primary={true}>
           <Form onSubmit={this._onSubmit}>
             <Header size='large'>
-              <Heading tag='h2' strong={true}>Add Post</Heading>
+              <Heading tag='h2' strong={true}>
+                {this.props.heading}
+              </Heading>
             </Header>
             {errorNode}
             <FormFields>

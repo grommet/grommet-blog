@@ -106,9 +106,15 @@ export default class Post extends Component {
       `http://blog.grommet.io/${post.id}`
     );
 
+    let backgroundOptions = {};
+    if (post.coverImage) {
+      backgroundOptions.backgroundImage = `url(${post.coverImage})`;
+    } else {
+      backgroundOptions.colorIndex = 'grey-2';
+    }
+
     return (
-      <Box pad='large' colorIndex='neutral-2'
-        backgroundImage={`url(${post.coverImage})`}>
+      <Box pad='large' colorIndex='neutral-2' {...backgroundOptions}>
         <Headline><strong>{post.title}</strong></Headline>
         <h3>
           Posted <Link to={`/archive/${year}/${month}/${day}`}>
