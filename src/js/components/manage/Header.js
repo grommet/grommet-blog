@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
+import Anchor from 'grommet/components/Anchor';
 import Box from 'grommet/components/Box';
 import Button from 'grommet/components/Button';
 import Header from 'grommet/components/Header';
@@ -16,8 +17,9 @@ import history from '../../RouteHistory';
 
 export default class BlogHeader extends Component {
 
-  _onAddPost () {
-    history.push('/manage/add');
+  _onAddPost (event) {
+    event.preventDefault();
+    history.push('/manage/post/add');
   }
 
   _onClosePost () {
@@ -43,7 +45,7 @@ export default class BlogHeader extends Component {
       );
     } else {
       control = (
-        <Button icon={<Add />} onClick={this._onAddPost}
+        <Anchor href='/manage/post/add' icon={<Add />} onClick={this._onAddPost}
           a11yTitle='Add Post' />
       );
     }

@@ -102,29 +102,37 @@ function routerProcessor (req, res, next) {
             blogDate: new Date()
           };
           if (renderProps.params && renderProps.params.splat) {
-            const post = getPostById(renderProps.params.splat);
-            blogMetadata.blogTitle = (
-              `${post.title} | Grommet Blog`
-            );
+            getPostById(renderProps.params.splat).then((post) => {
+              blogMetadata.blogTitle = (
+                `${post.title} | Grommet Blog`
+              );
 
-            const keywords = (post.tags || []).join(' ');
+              const keywords = (post.tags || []).join(' ');
 
-            if (post.coverImage) {
-              blogMetadata.blogImage = post.coverImage;
-            }
+              if (post.coverImage) {
+                blogMetadata.blogImage = post.coverImage;
+              }
 
-            blogMetadata.blogPage = post.id;
-            blogMetadata.blogKeywords = keywords;
-            blogMetadata.blogDescription = post.content.split('\n')[0];
-            blogMetadata.blogDate = post.createdAt;
+              blogMetadata.blogPage = post.id;
+              blogMetadata.blogKeywords = keywords;
+              blogMetadata.blogDescription = post.content.split('\n')[0];
+              blogMetadata.blogDate = post.createdAt;
+
+              res.render('index.ejs', {
+                appBody: body,
+                styleContent: styles,
+                asyncData: asyncDataNode,
+                ...blogMetadata
+              });
+            });
+          } else {
+            res.render('index.ejs', {
+              appBody: body,
+              styleContent: styles,
+              asyncData: asyncDataNode,
+              ...blogMetadata
+            });
           }
-
-          res.render('index.ejs', {
-            appBody: body,
-            styleContent: styles,
-            asyncData: asyncDataNode,
-            ...blogMetadata
-          });
         }, (err) => {
           res.status(500).send(err);
         });
@@ -138,7 +146,7 @@ function routerProcessor (req, res, next) {
   }
 }
 
-app.use('/manage', auth);
+app.get('/manage/*', auth);
 app.use('/api/post', post);
 app.use('/', routerProcessor);
 app.use('/', express.static(path.join(__dirname, '/../dist')));

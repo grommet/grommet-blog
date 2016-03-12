@@ -75,11 +75,54 @@ export default {
       .field('tags', post.tags || '')
       .field('content', post.content);
 
-      if (post.coverImage) {
-        postRest.attach('coverImage', post.coverImage);
+      if (post.images) {
+        post.images.forEach((image) => {
+          if (image.cover) {
+            postRest.field('cover', image.name);
+          }
+          postRest.attach(image.name, image.file, image.name);
+        });
       }
 
       postRest.end((err, res) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res.body);
+        }
+      });
+    });
+  },
+
+  editPost (post) {
+    return new Promise((resolve, reject) => {
+      let putRest = Rest.put(`${appContext}/api/post/`)
+      .field('id', post.id)
+      .field('title', post.title)
+      .field('author', post.author)
+      .field('tags', post.tags || '')
+      .field('content', post.content);
+
+      let unchangedImages = [];
+      if (post.images) {
+        post.images.forEach((image) => {
+          if (image.cover) {
+            putRest.field('cover', image.name);
+          }
+
+          if (image.file) {
+            putRest.attach(image.name, image.file, image.name);
+          } else {
+            unchangedImages.push(image.name);
+          }
+        });
+      }
+
+      if (unchangedImages) {
+        putRest.field('images', unchangedImages.join());
+      }
+
+      putRest.end((err, res) => {
         if (err) {
           reject(err);
         } else {

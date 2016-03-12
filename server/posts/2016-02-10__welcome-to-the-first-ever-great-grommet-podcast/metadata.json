@@ -3,5 +3,6 @@
   "title": "Welcome to the First-Ever Great Grommet Podcast!",
   "author": "Eric Soderberg",
   "tags": ["grommet", "reactjs", "podcast"],
+  "coverImage": "cover.png",
   "createdAt": "2016-02-10T19:59:25.865Z"
 }
