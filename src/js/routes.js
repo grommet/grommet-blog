@@ -8,6 +8,7 @@ import Post from './components/Post';
 import Search from './components/Search';
 import Manage from './components/manage/Manage';
 import ManageAddPost from './components/manage/ManageAddPost';
+import ManageEditPost from './components/manage/ManageEditPost';
 
 export default [
   { path: '/', component: Blog,
@@ -26,7 +27,8 @@ export default [
       { path: 'post/*', component: Post },
       { path: 'search', component: Search },
       { path: 'manage', component: Manage },
-      { path: 'manage/add', component: ManageAddPost },
+      { path: 'manage/post/add', component: ManageAddPost },
+      { path: 'manage/post/edit/*', component: ManageEditPost },
       { path: '*', component: NotFound }
     ]
   }

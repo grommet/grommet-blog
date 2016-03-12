@@ -10,14 +10,20 @@ import {
   filterPostsMapByMonth,
   buildSearchIndex,
   addPost,
-  getPendingPosts
+  editPost,
+  getAllPosts
 } from './utils/post';
 
 const router = Router();
 
-let posts = loadPosts();
-let postsByMonth = postsMonthMap(posts);
-let searchIndex = buildSearchIndex(posts);
+let posts;
+let postsByMonth;
+let searchIndex;
+loadPosts().then((loadedPosts) => {
+  posts = loadedPosts;
+  postsByMonth = postsMonthMap(posts);
+  searchIndex = buildSearchIndex(posts);
+});
 
 function pick(map, match) {
   return Object.assign({}, ...(
@@ -33,19 +39,91 @@ const USER_PASSWORD = process.env.USER_PASSWORD || 'admin';
 const auth = basicAuth(USER, USER_PASSWORD);
 
 router.post('/', auth, function (req, res) {
-  let metadata = Object.assign({}, req.body);
-  delete metadata.content;
-  metadata.tags = metadata.tags.split(',').map((tag) => tag.trim());
+  const coverName = req.body.cover;
 
-  addPost(req.body.content, metadata, req.files.coverImage).then(
+  const metadata = {
+    title: req.body.title,
+    author: req.body.author,
+    tags: (req.body.tags || '').split(',').map((tag) => tag.trim())
+  };
+
+  let images = [];
+  if (req.files) {
+    Object.keys(req.files).forEach((key) => {
+      let image = req.files[key];
+      if (image.name === coverName) {
+        image.cover = true;
+        images.push(image);
+      }
+    });
+  }
+
+  addPost(req.body.content, metadata, images).then(
     () => {
       if (process.env.BLOG_PERSISTANCE !== 'github') {
-        posts = loadPosts();
-        postsByMonth = postsMonthMap(posts);
-        searchIndex = buildSearchIndex(posts);
-      }
+        loadPosts().then((loadedPosts) => {
+          posts = loadedPosts;
+          postsByMonth = postsMonthMap(posts);
+          searchIndex = buildSearchIndex(posts);
 
-      res.sendStatus(200);
+          res.sendStatus(200);
+        }, (err) => res.status(500).json({ error: err.toString() }));
+      } else {
+        res.sendStatus(200);
+      }
+    },
+    (err) => res.status(500).json({ error: err.toString() })
+  );
+});
+
+router.put('/', auth, function (req, res) {
+  const coverName = req.body.cover;
+
+  const metadata = {
+    id: req.body.id,
+    title: req.body.title,
+    author: req.body.author,
+    tags: (req.body.tags || '').split(',').map((tag) => tag.trim())
+  };
+
+  let images = [];
+
+  if (req.body.images) {
+    images = req.body.images.split(',').map((imageName) => {
+      let image = {
+        name: imageName
+      };
+
+      if (imageName === coverName) {
+        image.cover = true;
+      }
+      return image;
+    });
+  }
+
+  if (req.files) {
+    Object.keys(req.files).forEach((key) => {
+      let image = req.files[key];
+      if (image.name === coverName) {
+        image.cover = true;
+      }
+      images.push(image);
+    });
+  }
+
+  editPost(req.body.content, metadata, images).then(
+    () => {
+      if (process.env.BLOG_PERSISTANCE !== 'github') {
+        loadPosts().then((loadedPosts) => {
+          posts = loadedPosts;
+          postsByMonth = postsMonthMap(posts);
+          searchIndex = buildSearchIndex(posts);
+
+          res.sendStatus(200);
+        }, (err) => res.status(500).json({ error: err.toString() }));
+      } else {
+        res.sendStatus(200);
+      }
     },
     (err) => res.status(500).json({ error: err.toString() })
   );
@@ -61,11 +139,8 @@ router.get('/archive/', function (req, res) {
 
 router.get('/manage/', function (req, res) {
   if (process.env.BLOG_PERSISTANCE === 'github') {
-    getPendingPosts().then(
-      (pendingPosts) => {
-        let allPosts = [...posts, ...pendingPosts];
-        res.send(postsMonthMap(allPosts));
-      },
+    getAllPosts().then(
+      (allPosts) => res.send(postsMonthMap(allPosts)),
       (err) => res.status(500).json({ error: err.toString() })
     );
   } else {

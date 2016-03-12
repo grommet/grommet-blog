@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 
+import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Footer from 'grommet/components/Footer';
@@ -19,6 +20,7 @@ import Error from '../Error';
 import Loading from '../Loading';
 import BlogFooter from '../Footer';
 import store from '../../store';
+import history from '../../RouteHistory';
 
 import { setDocumentTitle } from '../../utils/blog';
 
@@ -75,6 +77,11 @@ export default class Manage extends Component {
     });
   }
 
+  _onEditPost (postId, event) {
+    event.preventDefault();
+    history.push(`/manage/post/edit/${postId}`);
+  }
+
   _renderArchive () {
     let monthKeys = Object.keys(this.archive);
     return monthKeys.map((monthLabel, index) => {
@@ -85,11 +92,13 @@ export default class Manage extends Component {
         );
 
         //pick a range from 0 - 4 based on the current index.
-        let colorIndex = Math.round(index * 4 / monthKeys.length);
+        const colorIndex = Math.round(index * 4 / monthKeys.length);
 
+        const editIcon = <EditIcon a11yTitle={`Edit ${post.title} post`} />;
         let footerNode = (
           <Box pad={{horizontal: 'small'}}>
-            <EditIcon a11yTitle={`Edit ${post.title} post`} />
+            <Anchor href={`/manage/post/edit/${post.id}`} icon={editIcon}
+              onClick={this._onEditPost.bind(this, post.id)} />
           </Box>
         );
 
@@ -126,7 +135,7 @@ export default class Manage extends Component {
             </Footer>
           </Tile>
         );
-      });
+      }, this);
 
       return (
         <Box key={`month_group_${index}`} separator='top'>

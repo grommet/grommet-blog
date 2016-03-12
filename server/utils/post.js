@@ -1,8 +1,6 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
 
-import fs from 'fs';
 import path from 'path';
-import glob from 'glob';
 import moment from 'moment';
 import lunr from 'lunr';
 
@@ -10,46 +8,11 @@ import GithubPostDAO from '../persistance/GithubPostDAO';
 import PostDAO from '../persistance/PostDAO';
 
 export function loadPosts () {
-  const root = path.resolve(__dirname, '../posts');
-  let posts = [];
-  fs.readdirSync(root).forEach((postFolder) => {
-    const postRoot = path.join(root, postFolder);
-    if (fs.lstatSync(postRoot).isDirectory()) {
-      const metadataFilename = path.join(postRoot, 'metadata.json');
-      const contentFilename = path.join(postRoot, 'content.md');
-      const imageFilename = glob.sync('**cover.**', { cwd: postRoot })[0];
-
-      const metadata = JSON.parse(fs.readFileSync(metadataFilename, 'utf8'));
-      const content = fs.readFileSync(contentFilename, 'utf8');
-
-      let coverImagePath;
-      if (imageFilename) {
-        coverImagePath = `/api/post/img/${postFolder}/${imageFilename}`;
-      }
-
-      posts.push({
-        coverImage: coverImagePath,
-        content: content,
-        ...metadata
-      });
-    }
-  });
-
-  return posts.reverse();
+  return new PostDAO().getAll();
 }
 
 export function getPostById (id) {
-  let posts = loadPosts ();
-
-  let matchingPost;
-  posts.some((post) => {
-    if (post.id === id) {
-      matchingPost = post;
-      return true;
-    }
-  });
-
-  return matchingPost;
+  return new PostDAO().getById(id);
 }
 
 export function postsMonthMap (posts) {
@@ -93,7 +56,7 @@ export function buildSearchIndex (posts) {
   return index;
 }
 
-export function addPost (content, metadata, coverImage) {
+export function addPost (content, metadata, images) {
   const titleId = metadata.title.replace(/ /g, '-').toLowerCase();
 
   const today = moment();
@@ -104,14 +67,28 @@ export function addPost (content, metadata, coverImage) {
   const postFolderName = `${folderDateFormat}__${titleId}`;
 
   if (process.env.BLOG_PERSISTANCE === 'github') {
-    return new GithubPostDAO(postFolderName, content, metadata, coverImage).add();
+    return new GithubPostDAO(postFolderName, content, metadata, images).add();
   } else {
-    return new PostDAO(postFolderName, content, metadata, coverImage).add(
+    return new PostDAO(postFolderName, content, metadata, images).add(
       path.resolve(path.join(__dirname, '../../'))
     );
   }
 }
 
-export function getPendingPosts () {
-  return new GithubPostDAO().getPending();
+export function editPost (content, metadata, images) {
+  const titleId = metadata.title.replace(/ /g, '-').toLowerCase();
+  const folderDateFormat = moment(metadata.createdAt).format('YYYY-MM-DD');
+  const postFolderName = `${folderDateFormat}__${titleId}`;
+
+  if (process.env.BLOG_PERSISTANCE === 'github') {
+    return new GithubPostDAO(postFolderName, content, metadata, images).edit();
+  } else {
+    return new PostDAO(postFolderName, content, metadata, images).edit(
+      path.resolve(path.join(__dirname, '../../'))
+    );
+  }
+}
+
+export function getAllPosts () {
+  return new GithubPostDAO().getAll();
 }
