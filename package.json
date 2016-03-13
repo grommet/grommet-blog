@@ -18,6 +18,7 @@
     "grommet": "https://github.com/grommet/grommet/tarball/stable",
     "grommet-templates": "https://github.com/grommet/grommet-templates/tarball/stable",
     "gulp": "^3.9.0",
+    "highlight.js": "^9.2.0",
     "lunr": "^0.6.0",
     "marked": "^0.3.5",
     "moment": "^2.11.2",

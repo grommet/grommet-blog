@@ -23,6 +23,40 @@ import store from '../store';
 
 import { setDocumentTitle } from '../utils/blog';
 
+//hjjs configuration
+import hljs from 'highlight.js/lib/highlight';
+import bash from 'highlight.js/lib/languages/bash';
+import xml from 'highlight.js/lib/languages/xml';
+import javascript from 'highlight.js/lib/languages/javascript';
+import scss from 'highlight.js/lib/languages/scss';
+
+hljs.registerLanguage('bash', bash);
+hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('scss', scss);
+
+var renderer = new marked.Renderer();
+
+renderer.image = function (href, title, text) {
+  return `
+    <figure>
+      <a href=${href} target="_blank">
+        <img src=${href} alt=${text} />
+      </a>
+      <figcaption>
+       ${text}
+      </figcaption>
+    </figure>
+  `;
+};
+
+marked.setOptions({
+  renderer: renderer,
+  highlight: function (code) {
+    return hljs.highlightAuto(code).value;
+  }
+});
+
 export default class Post extends Component {
 
   /**
@@ -42,6 +76,7 @@ export default class Post extends Component {
     this._onPostFailed = this._onPostFailed.bind(this);
     this._renderPost = this._renderPost.bind(this);
     this._renderPostHeader = this._renderPostHeader.bind(this);
+    this._highlightCode = this._highlightCode.bind(this);
 
     this.state = {
       post: undefined,
@@ -61,6 +96,13 @@ export default class Post extends Component {
     );
   }
 
+  _highlightCode () {
+    var nodes = document.querySelectorAll('pre code');
+    for (var i = 0; i < nodes.length; i++) {
+      hljs.highlightBlock(nodes[i]);
+    }
+  }
+
   _onPostReceived (post) {
     if (post) {
       setDocumentTitle(post.title);
@@ -73,6 +115,8 @@ export default class Post extends Component {
           window.addthis_share.title = post.title;
           window.addthis.toolbox('.addthis_toolbox');
         }
+
+        this._highlightCode();
       });
     } else {
       this.setState({ post: post, loading: false });
@@ -114,7 +158,8 @@ export default class Post extends Component {
     }
 
     return (
-      <Box pad='large' colorIndex='neutral-2' {...backgroundOptions}>
+      <Box pad='large' colorIndex='neutral-2' {...backgroundOptions}
+        align='center' justify='center'>
         <Headline><strong>{post.title}</strong></Headline>
         <h3>
           Posted <Link to={`/archive/${year}/${month}/${day}`}>
@@ -163,7 +208,7 @@ export default class Post extends Component {
     return (
       <div>
         {this._renderPostHeader()}
-        <Box pad={{ horizontal: 'large' }}
+        <Box pad={{ horizontal: 'large' }} align="center" justify="center"
           className='markdown__container'>
           <div dangerouslySetInnerHTML={htmlContent} />
         </Box>
