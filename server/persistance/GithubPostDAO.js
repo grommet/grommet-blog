@@ -195,6 +195,17 @@ export default class GithubPostDAO extends PostDAO {
     });
   }
 
+  delete () {
+    return new Promise((resolve, reject) => {
+      this._clone()
+        .then(this._createNewBranch.bind(this, 'Delete'), reject)
+        .then(super.delete.bind(this, ROOT), reject)
+        .then(this._commitAndPushPost.bind(this, 'Delete'), reject)
+        .then(this._createPullRequest.bind(this, 'Delete'), reject)
+        .then(resolve, reject);
+    });
+  }
+
   getPending () {
     return new Promise((resolve, reject) => {
       github.pullRequests.getAll({

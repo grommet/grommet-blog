@@ -78,7 +78,6 @@ export function addPost (content, metadata, images) {
 
 export function editPost (content, metadata, images) {
   const titleId = metadata.title.replace(/ /g, '-').toLowerCase();
-  console.log(metadata.createdAt, moment(metadata.createdAt).format('YYYY-MM-DD'));
   const folderDateFormat = moment(metadata.createdAt).format('YYYY-MM-DD');
   const postFolderName = `${folderDateFormat}__${titleId}`;
 
@@ -86,6 +85,22 @@ export function editPost (content, metadata, images) {
     return new GithubPostDAO(postFolderName, content, metadata, images).edit();
   } else {
     return new PostDAO(postFolderName, content, metadata, images).edit(
+      path.resolve(path.join(__dirname, '../../'))
+    );
+  }
+}
+
+export function deletePost (id) {
+  const idGroup = id.split('/');
+  const postTitle = idGroup[idGroup.length - 1];
+  idGroup.pop();
+  const postDate = idGroup.join('-');
+  const postFolderName = `${postDate}__${postTitle}`;
+  console.log(postFolderName);
+  if (process.env.BLOG_PERSISTANCE === 'github') {
+    return new GithubPostDAO(postFolderName).delete();
+  } else {
+    return new PostDAO(postFolderName).delete(
       path.resolve(path.join(__dirname, '../../'))
     );
   }

@@ -4,6 +4,7 @@ import moment from 'moment';
 import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
+import Button from 'grommet/components/Button';
 import Footer from 'grommet/components/Footer';
 import Heading from 'grommet/components/Heading';
 import Label from 'grommet/components/Label';
@@ -12,9 +13,11 @@ import Tile from 'grommet/components/Tile';
 import Tiles from 'grommet/components/Tiles';
 
 import EditIcon from 'grommet/components/icons/base/Edit';
+import DeleteIcon from 'grommet/components/icons/base/Trash';
 import StatusIcon from 'grommet/components/icons/Status';
 
 import ManageHeader from './Header';
+import ManageDeletePost from './ManageDeletePost';
 
 import Error from '../Error';
 import Loading from '../Loading';
@@ -42,10 +45,17 @@ export default class Manage extends Component {
     this._onArchiveReceived = this._onArchiveReceived.bind(this);
     this._onArchiveFailed = this._onArchiveFailed.bind(this);
     this._renderArchive = this._renderArchive.bind(this);
+    this._onRequestToDeletePost = this._onRequestToDeletePost.bind(this);
+    this._onDeletePost = this._onDeletePost.bind(this);
+    this._onDeletePostCancel = this._onDeletePostCancel.bind(this);
+    this._onDeleteSucceed = this._onDeleteSucceed.bind(this);
+    this._onDeleteFailed = this._onDeleteFailed.bind(this);
 
     this.state = {
       archive: undefined,
-      loading: true
+      loading: true,
+      delete: false,
+      post: undefined
     };
   }
 
@@ -82,6 +92,34 @@ export default class Manage extends Component {
     history.push(`/manage/post/edit/${postId}`);
   }
 
+  _onDeletePost () {
+    store.deletePost(this.state.post).then(
+      this._onDeleteSucceed, this._onDeleteFailed
+    );
+  }
+
+  _onRequestToDeletePost (post) {
+    this.setState({delete: true, post: post});
+  }
+
+  _onDeletePostCancel () {
+    this.setState({delete: false, post: undefined});
+  }
+
+  _onDeleteSucceed (archive) {
+    this.setState({delete: false, post: undefined});
+    store.getArchive('/manage').then(
+      this._onArchiveReceived, this._onArchiveFailed
+    );
+  }
+
+  _onDeleteFailed () {
+    this.setState({
+      loading: false,
+      error: 'Could not delete post. Make sure you have internet connection and try again.'
+    });
+  }
+
   _renderArchive () {
     let monthKeys = Object.keys(this.archive);
     return monthKeys.map((monthLabel, index) => {
@@ -95,10 +133,13 @@ export default class Manage extends Component {
         const colorIndex = Math.round(index * 4 / monthKeys.length);
 
         const editIcon = <EditIcon a11yTitle={`Edit ${post.title} post`} />;
+        const deleteIcon = <DeleteIcon a11yTitle={`Delete ${post.title} post`} />;
         let footerNode = (
-          <Box pad={{horizontal: 'small'}}>
+          <Box direction="row" responsive={false}>
             <Anchor href={`/manage/post/edit/${post.id}`} icon={editIcon}
               onClick={this._onEditPost.bind(this, post.id)} />
+            <Button icon={deleteIcon}
+              onClick={this._onRequestToDeletePost.bind(this, post)} />
           </Box>
         );
 
@@ -179,6 +220,14 @@ export default class Manage extends Component {
       );
     }
 
+    let deleteLayer;
+    if (this.state.delete) {
+      deleteLayer = (
+        <ManageDeletePost post={this.state.post}
+          onCancel={this._onDeletePostCancel} onDelete={this._onDeletePost} />
+      );
+    }
+
     return (
       <Article scrollStep={false}>
         <ManageHeader />
@@ -188,6 +237,7 @@ export default class Manage extends Component {
           {archiveNode}
         </Section>
         {footerNode}
+        {deleteLayer}
       </Article>
     );
   }
