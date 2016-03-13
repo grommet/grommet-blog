@@ -81,6 +81,7 @@ router.put('/', auth, function (req, res) {
 
   const metadata = {
     id: req.body.id,
+    createdAt: req.body.createdAt,
     title: req.body.title,
     author: req.body.author,
     tags: (req.body.tags || '').split(',').map((tag) => tag.trim())

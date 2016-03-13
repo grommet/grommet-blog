@@ -98,6 +98,7 @@ export default {
     return new Promise((resolve, reject) => {
       let putRest = Rest.put(`${appContext}/api/post/`)
       .field('id', post.id)
+      .field('createdAt', post.createdAt)
       .field('title', post.title)
       .field('author', post.author)
       .field('tags', post.tags || '')

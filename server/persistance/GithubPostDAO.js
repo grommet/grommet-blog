@@ -30,7 +30,7 @@ const USER_NAME = process.env.GIT_USERNAME || 'grommet-github-bot';
 const USER_EMAIL = process.env.GIT_USER_EMAIL || 'grommet@hpe.com';
 const TOKEN = process.env.GH_TOKEN;
 
-const root = path.resolve(`/tmp/${PROJECT_NAME}`);
+const ROOT = path.resolve(`/tmp/${PROJECT_NAME}`);
 
 const github = new GitHubApi({
   version: "3.0.0",
@@ -59,7 +59,6 @@ export default class GithubPostDAO extends PostDAO {
 
     this._clone = this._clone.bind(this);
     this._createNewBranch = this._createNewBranch.bind(this);
-    this._addPost = this._addPost.bind(this);
     this._commitAndPushPost = this._commitAndPushPost.bind(this);
     this._createPullRequest = this._createPullRequest.bind(this);
     this._mapPosts = this._mapPosts.bind(this);
@@ -67,12 +66,12 @@ export default class GithubPostDAO extends PostDAO {
     this.getAll = this.getAll.bind(this);
   }
 
-  _createPullRequest () {
+  _createPullRequest (action) {
     return new Promise((resolve, reject) => {
       github.pullRequests.create({
         ...BASE_GITHUB_CONFIG,
-        title: `Add post: ${this.postFolderName}`,
-        head: this.postFolderName
+        title: `${action} post: ${this.postFolderName}`,
+        head: `${action}_${this.postFolderName}`
       }, (err) => {
         if (err) {
           reject(err);
@@ -83,18 +82,18 @@ export default class GithubPostDAO extends PostDAO {
     });
   }
 
-  _commitAndPushPost () {
+  _commitAndPushPost (action) {
     return new Promise((resolve, reject) => {
-      simpleGit(root)
+      simpleGit(ROOT)
        .outputHandler(function (command, stdout, stderr) {
          stdout.pipe(process.stdout);
          stderr.pipe(process.stderr);
        })
        .addConfig('user.name', USER_NAME)
        .addConfig('user.email', USER_EMAIL)
-       .add(`server/posts/${this.postFolderName}`)
-       .commit(`Add post: ${this.postFolderName}`)
-       .push('origin', this.postFolderName, (err) => {
+       .add('.')
+       .commit(`${action} post: ${this.postFolderName}`)
+       .push('origin', `${action}_${this.postFolderName}`, (err) => {
          if (err) {
            reject(err);
          } else {
@@ -104,14 +103,10 @@ export default class GithubPostDAO extends PostDAO {
     });
   }
 
-  _addPost () {
-    return super.add(root);
-  }
-
-  _createNewBranch () {
+  _createNewBranch (action) {
     return new Promise((resolve, reject) => {
-      simpleGit(root).checkoutLocalBranch(
-        this.postFolderName, (err) => {
+      simpleGit(ROOT).checkoutLocalBranch(
+        `${action}_${this.postFolderName}`, (err) => {
           if (err) {
             reject(err);
           } else {
@@ -123,11 +118,11 @@ export default class GithubPostDAO extends PostDAO {
   }
 
   _clone () {
-    del.sync([root], { force: true });
+    del.sync([ROOT], { force: true });
     return new Promise((resolve, reject) => {
       simpleGit().clone(
         `https://${TOKEN}@github.com/${USER}/${PROJECT_NAME}.git`,
-        root,
+        ROOT,
         (err) => {
           if (err) {
             reject(err);
@@ -139,31 +134,32 @@ export default class GithubPostDAO extends PostDAO {
     });
   }
 
-  _loadPostMetadata (postTitle) {
+  _loadPostMetadata (post) {
     return new Promise((resolve, reject) => {
-      let root = path.resolve(`/tmp/${postTitle}/${PROJECT_NAME}`);
-      del.sync([root], { force: true });
+      let postBranch = `${post.action}_${post.title}`;
+      let ROOT = path.resolve(`/tmp/${postBranch}/${PROJECT_NAME}`);
+      del.sync([ROOT], { force: true });
       simpleGit()
         .clone(
           `https://${TOKEN}@github.com/${USER}/${PROJECT_NAME}.git`,
-          root
+          ROOT
         ).then(() => {
-          simpleGit(root)
-            .checkout(postTitle)
+          simpleGit(ROOT)
+            .checkout(postBranch)
             .then(() => {
-              super.get(root, `server/posts/${postTitle}/metadata.json`).then(resolve, reject);
+              super.get(ROOT, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
             });
         });
     });
   }
 
-  _mapPosts (pendingPostsTitle) {
+  _mapPosts (pendingPostsPR) {
     return new Promise((resolve, reject) => {
       let posts = [];
       let promises = [];
 
-      pendingPostsTitle.forEach((postTitle, index) => {
-        let promise = this._loadPostMetadata(postTitle, resolve, reject);
+      pendingPostsPR.forEach((post, index) => {
+        let promise = this._loadPostMetadata(post, resolve, reject);
         promises.push(promise);
         promise.then((post) => {
           post.pending = true;
@@ -180,10 +176,21 @@ export default class GithubPostDAO extends PostDAO {
   add () {
     return new Promise((resolve, reject) => {
       this._clone()
-        .then(this._createNewBranch, reject)
-        .then(this._addPost, reject)
-        .then(this._commitAndPushPost, reject)
-        .then(this._createPullRequest, reject)
+        .then(this._createNewBranch.bind(this, 'Add'), reject)
+        .then(super.add.bind(this, ROOT), reject)
+        .then(this._commitAndPushPost.bind(this, 'Add'), reject)
+        .then(this._createPullRequest.bind(this, 'Add'), reject)
+        .then(resolve, reject);
+    });
+  }
+
+  edit () {
+    return new Promise((resolve, reject) => {
+      this._clone()
+        .then(this._createNewBranch.bind(this, 'Edit'), reject)
+        .then(super.edit.bind(this, ROOT), reject)
+        .then(this._commitAndPushPost.bind(this, 'Edit'), reject)
+        .then(this._createPullRequest.bind(this, 'Edit'), reject)
         .then(resolve, reject);
     });
   }
@@ -199,15 +206,20 @@ export default class GithubPostDAO extends PostDAO {
           reject(err);
         } else {
           const titleRegex = /(Add|Edit|Delete) post: (.*)$/;
-          const pendingPostsTitle = openPullRequests
+          const pendingPostsPR = openPullRequests
             .filter(
               (pullRequest) => titleRegex.exec(pullRequest.title)
             ).map(
-              (pullRequest) => titleRegex.exec(pullRequest.title)[2]
+              (pullRequest) => {
+                return {
+                  action: titleRegex.exec(pullRequest.title)[1],
+                  title: titleRegex.exec(pullRequest.title)[2]
+                };
+              }
             );
 
-          if (pendingPostsTitle && pendingPostsTitle.length > 0) {
-            this._mapPosts(pendingPostsTitle).then(resolve, reject);
+          if (pendingPostsPR && pendingPostsPR.length > 0) {
+            this._mapPosts(pendingPostsPR).then(resolve, reject);
           } else {
             resolve([]);
           }
@@ -220,6 +232,10 @@ export default class GithubPostDAO extends PostDAO {
     return new Promise((resolve, reject) => {
       this.getPending().then((pending) => {
         super.getAll().then((posts) => {
+          let pendingTitles = pending.map((post) => post.title);
+          posts = posts.filter(
+            (post) => pendingTitles.indexOf(post.title) === -1
+          );
           resolve([...posts, ...pending]);
         }, reject);
       }, reject);
