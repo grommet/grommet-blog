@@ -144,11 +144,18 @@ export default class GithubPostDAO extends PostDAO {
           `https://${TOKEN}@github.com/${USER}/${PROJECT_NAME}.git`,
           ROOT
         ).then(() => {
-          simpleGit(ROOT)
-            .checkout(postBranch)
-            .then(() => {
-              super.get(ROOT, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
-            });
+          if (post.action === 'Delete') {
+            simpleGit(ROOT)
+              .then(() => {
+                super.get(ROOT, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
+              });
+          } else {
+            simpleGit(ROOT)
+              .checkout(postBranch)
+              .then(() => {
+                super.get(ROOT, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
+              });
+          }
         });
     });
   }
