@@ -279,7 +279,7 @@ export default class PostDAO {
           const metadata = JSON.parse(fs.readFileSync(metadataFilename, 'utf8'));
           let content = fs.readFileSync(contentFilename, 'utf8');
           const replaceValue = `![$1](/api/post/img/${postFolder}/images/$2)`;
-          content = content.replace(/!\[(.*)\]\((.*)\)/g, replaceValue);
+          content = content.replace(/!\[(.*)\]\((?!http)(.*)\)/g, replaceValue);
 
           metadata.tags = metadata.tags.join(', ').trim();
 

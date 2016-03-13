@@ -38,14 +38,20 @@ hljs.registerLanguage('scss', scss);
 var renderer = new marked.Renderer();
 
 renderer.image = function (href, title, text) {
+  let caption = '';
+  if (text && text !== '') {
+    caption = `
+      <figcaption>
+       ${text}
+      </figcaption>
+    `;
+  }
   return `
     <figure>
       <a href=${href} target="_blank">
         <img src=${href} alt=${text} />
       </a>
-      <figcaption>
-       ${text}
-      </figcaption>
+      ${caption}
     </figure>
   `;
 };
