@@ -113,16 +113,18 @@ export default class Post extends Component {
     if (post) {
       setDocumentTitle(post.title);
       this.setState({ post: post, loading: false }, () => {
+        this._highlightCode();
+
         if (window.addthis) {
           let target = (
             `http://blog.grommet.io/${post.id}`
           );
-          window.addthis_share.url = target;
-          window.addthis_share.title = post.title;
+          if (window.addthis_share) {
+            window.addthis_share.url = target;
+            window.addthis_share.title = post.title;
+          }
           window.addthis.toolbox('.addthis_toolbox');
         }
-
-        this._highlightCode();
       });
     } else {
       this.setState({ post: post, loading: false });
