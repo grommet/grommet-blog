@@ -2,6 +2,7 @@
 
 import mkdirp from 'mkdirp';
 import moment from 'moment';
+import rimraf from 'rimraf';
 import path from 'path';
 import fs from 'fs';
 
@@ -24,6 +25,7 @@ export default class PostDAO {
 
     this.add = this.add.bind(this);
     this.edit = this.edit.bind(this);
+    this.delete = this.delete.bind(this);
     this._addMetadata = this._addMetadata.bind(this);
     this._addContent = this._addContent.bind(this);
     this._addImages = this._addImages.bind(this);
@@ -198,7 +200,6 @@ export default class PostDAO {
       const titleId = this.metadata.title.replace(/ /g, '-').toLowerCase();
       this.metadata.id = `${idDateFormat}/${titleId}`;
 
-      console.log(previousFolder);
       if (fs.existsSync(previousFolder)) {
         if (previousFolder !== newFolder) {
           fs.renameSync(previousFolder, newFolder);
@@ -216,6 +217,20 @@ export default class PostDAO {
       } else {
         reject('Post folder not found.');
       }
+    });
+  }
+
+  delete (root) {
+    return new Promise((resolve, reject) => {
+      const postFolder = path.join(root, `server/posts/${this.postFolderName}`);
+
+      rimraf(postFolder, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
   }
 

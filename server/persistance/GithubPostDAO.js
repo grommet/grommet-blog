@@ -144,11 +144,18 @@ export default class GithubPostDAO extends PostDAO {
           `https://${TOKEN}@github.com/${USER}/${PROJECT_NAME}.git`,
           ROOT
         ).then(() => {
-          simpleGit(ROOT)
-            .checkout(postBranch)
-            .then(() => {
-              super.get(ROOT, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
-            });
+          if (post.action === 'Delete') {
+            simpleGit(ROOT)
+              .then(() => {
+                super.get(ROOT, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
+              });
+          } else {
+            simpleGit(ROOT)
+              .checkout(postBranch)
+              .then(() => {
+                super.get(ROOT, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
+              });
+          }
         });
     });
   }
@@ -191,6 +198,17 @@ export default class GithubPostDAO extends PostDAO {
         .then(super.edit.bind(this, ROOT), reject)
         .then(this._commitAndPushPost.bind(this, 'Edit'), reject)
         .then(this._createPullRequest.bind(this, 'Edit'), reject)
+        .then(resolve, reject);
+    });
+  }
+
+  delete () {
+    return new Promise((resolve, reject) => {
+      this._clone()
+        .then(this._createNewBranch.bind(this, 'Delete'), reject)
+        .then(super.delete.bind(this, ROOT), reject)
+        .then(this._commitAndPushPost.bind(this, 'Delete'), reject)
+        .then(this._createPullRequest.bind(this, 'Delete'), reject)
         .then(resolve, reject);
     });
   }

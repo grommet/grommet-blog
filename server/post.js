@@ -11,6 +11,7 @@ import {
   buildSearchIndex,
   addPost,
   editPost,
+  deletePost,
   getAllPosts
 } from './utils/post';
 
@@ -130,6 +131,25 @@ router.put('/', auth, function (req, res) {
   );
 });
 
+router.delete('/*', auth, function (req, res) {
+  deletePost(req.params['0']).then(
+    () => {
+      if (process.env.BLOG_PERSISTANCE !== 'github') {
+        loadPosts().then((loadedPosts) => {
+          posts = loadedPosts;
+          postsByMonth = postsMonthMap(posts);
+          searchIndex = buildSearchIndex(posts);
+
+          res.sendStatus(200);
+        }, (err) => res.status(500).json({ error: err.toString() }));
+      } else {
+        res.sendStatus(200);
+      }
+    },
+    (err) => res.status(500).json({ error: err.toString() })
+  );
+});
+
 router.get('/', function (req, res) {
   res.send(posts);
 });
@@ -138,7 +158,7 @@ router.get('/archive/', function (req, res) {
   res.send(postsByMonth);
 });
 
-router.get('/manage/', function (req, res) {
+router.get('/manage/', auth, function (req, res) {
   if (process.env.BLOG_PERSISTANCE === 'github') {
     getAllPosts().then(
       (allPosts) => res.send(postsMonthMap(allPosts)),

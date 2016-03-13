@@ -131,5 +131,17 @@ export default {
         }
       });
     });
+  },
+
+  deletePost (post) {
+    return new Promise((resolve, reject) => {
+      Rest.del(`${appContext}/api/post/${post.id}`).end((err, res) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res.body);
+        }
+      });
+    });
   }
 };
