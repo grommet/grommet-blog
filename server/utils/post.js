@@ -64,6 +64,7 @@ export function addPost (content, metadata, images) {
   const folderDateFormat = today.format('YYYY-MM-DD');
 
   metadata.id = `${idDateFormat}/${titleId}`;
+  metadata.createdAt = today;
   const postFolderName = `${folderDateFormat}__${titleId}`;
 
   if (process.env.BLOG_PERSISTANCE === 'github') {
@@ -77,6 +78,7 @@ export function addPost (content, metadata, images) {
 
 export function editPost (content, metadata, images) {
   const titleId = metadata.title.replace(/ /g, '-').toLowerCase();
+  console.log(metadata.createdAt, moment(metadata.createdAt).format('YYYY-MM-DD'));
   const folderDateFormat = moment(metadata.createdAt).format('YYYY-MM-DD');
   const postFolderName = `${folderDateFormat}__${titleId}`;
 

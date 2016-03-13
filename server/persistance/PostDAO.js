@@ -198,6 +198,7 @@ export default class PostDAO {
       const titleId = this.metadata.title.replace(/ /g, '-').toLowerCase();
       this.metadata.id = `${idDateFormat}/${titleId}`;
 
+      console.log(previousFolder);
       if (fs.existsSync(previousFolder)) {
         if (previousFolder !== newFolder) {
           fs.renameSync(previousFolder, newFolder);
