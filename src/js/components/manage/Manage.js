@@ -15,6 +15,7 @@ import Tiles from 'grommet/components/Tiles';
 import EditIcon from 'grommet/components/icons/base/Edit';
 import DeleteIcon from 'grommet/components/icons/base/Trash';
 import StatusIcon from 'grommet/components/icons/Status';
+import SpinningIcon from 'grommet/components/icons/Spinning';
 
 import ManageHeader from './Header';
 import ManageDeletePost from './ManageDeletePost';
@@ -55,6 +56,7 @@ export default class Manage extends Component {
       archive: undefined,
       loading: true,
       delete: false,
+      deleting: false,
       post: undefined
     };
   }
@@ -93,6 +95,7 @@ export default class Manage extends Component {
   }
 
   _onDeletePost () {
+    this.setState({deleting: true, delete: false});
     store.deletePost(this.state.post).then(
       this._onDeleteSucceed, this._onDeleteFailed
     );
@@ -107,7 +110,7 @@ export default class Manage extends Component {
   }
 
   _onDeleteSucceed (archive) {
-    this.setState({delete: false, post: undefined});
+    this.setState({deleting: false, post: undefined});
     store.getArchive('/manage').then(
       this._onArchiveReceived, this._onArchiveFailed
     );
@@ -116,6 +119,7 @@ export default class Manage extends Component {
   _onDeleteFailed () {
     this.setState({
       loading: false,
+      deleting: false,
       error: 'Could not delete post. Make sure you have internet connection and try again.'
     });
   }
@@ -132,16 +136,30 @@ export default class Manage extends Component {
         //pick a range from 0 - 4 based on the current index.
         const colorIndex = Math.round(index * 4 / monthKeys.length);
 
-        const editIcon = <EditIcon a11yTitle={`Edit ${post.title} post`} />;
-        const deleteIcon = <DeleteIcon a11yTitle={`Delete ${post.title} post`} />;
-        let footerNode = (
-          <Box direction="row" responsive={false}>
-            <Anchor href={`/manage/post/edit/${post.id}`} icon={editIcon}
-              onClick={this._onEditPost.bind(this, post.id)} />
-            <Button icon={deleteIcon}
-              onClick={this._onRequestToDeletePost.bind(this, post)} />
-          </Box>
-        );
+        let footerNode;
+        if (this.state.deleting && this.state.post.id === post.id) {
+          footerNode = (
+            <Box direction="row">
+              <Box justify="center">
+                <SpinningIcon />
+              </Box>
+              <Box pad={{ horizontal: 'small' }}>
+                <span>Deleting...</span>
+              </Box>
+            </Box>
+          );
+        } else {
+          const editIcon = <EditIcon a11yTitle={`Edit ${post.title} post`} />;
+          const deleteIcon = <DeleteIcon a11yTitle={`Delete ${post.title} post`} />;
+          footerNode = (
+            <Box direction="row" responsive={false}>
+              <Anchor href={`/manage/post/edit/${post.id}`} icon={editIcon}
+                onClick={this._onEditPost.bind(this, post.id)} />
+              <Button icon={deleteIcon}
+                onClick={this._onRequestToDeletePost.bind(this, post)} />
+            </Box>
+          );
+        }
 
         let colorIndexProp = `neutral-${colorIndex + 1}`;
         if (post.pending) {

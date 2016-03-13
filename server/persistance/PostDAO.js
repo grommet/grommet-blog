@@ -35,7 +35,7 @@ export default class PostDAO {
 
   _addImages () {
     return new Promise((resolve, reject) => {
-      if (this.images) {
+      if (this.images.length > 0) {
         this.images.forEach((image, index) => {
           const imageFolder = path.join(this.postFolder, 'images');
           if (!fs.existsSync(imageFolder)) {
