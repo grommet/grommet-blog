@@ -2,4 +2,10 @@ As many of you know, technologists are an opinionated bunch and debates on topic
 
 With that said, we chose React because of the following benefits.  While conducting our investigation, we relied on the experiences and feedback of other adopters. As such, I’ve noted which company pointed out the benefits during our evaluation.  Since our adoption, many other companies have started using React.
 
-!['Test image'](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png)
+<center>![Test image](IMG_1228.jpg)</center>
+
+```js
+function test () {
+  console.log('It works!');
+}
+```

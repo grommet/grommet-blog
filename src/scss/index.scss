@@ -3,6 +3,7 @@ $readable-text-width: 960px;
 $form-width: 800px;
 $paragraph-large-font-size: 18px;
 
+@import 'highlight-js.github';
 @import 'grommet/scss/vanilla/index';
 
 .post__title {
@@ -12,6 +13,17 @@ $paragraph-large-font-size: 18px;
 .markdown__container {
   p {
     @include inuit-font-size($paragraph-large-font-size);
+  }
+
+  img {
+    max-width: 400px;
+    width: 100%;
+  }
+
+  center {
+    max-width: $readable-text-width;
+    margin-top: 24px;
+    margin-bottom: 24px;
   }
 }
 
