@@ -91,7 +91,7 @@ export default class GithubPostDAO extends PostDAO {
        })
        .addConfig('user.name', USER_NAME)
        .addConfig('user.email', USER_EMAIL)
-       .add('.')
+       .add(['--all', '.'])
        .commit(`${action} post: ${this.postFolderName}`)
        .pull('origin', 'master')
        .push('origin', `${action}_${this.postFolderName}`, (err) => {
