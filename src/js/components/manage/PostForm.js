@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 
+import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Button from 'grommet/components/Button';
@@ -21,10 +22,15 @@ import EditIcon from 'grommet/components/icons/base/Edit';
 import SpinningIcon from 'grommet/components/icons/Spinning';
 
 import ManageHeader from './Header';
+import PreviewPost from './PreviewPost';
 import ImageForm from './ImageForm';
 import BlogFooter from '../Footer';
 
 import { setDocumentTitle } from '../../utils/blog';
+
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
 
 export default class PostForm extends Component {
   constructor (props) {
@@ -37,12 +43,15 @@ export default class PostForm extends Component {
     this._onContentChange = this._onContentChange.bind(this);
     this._renderImagesForm = this._renderImagesForm.bind(this);
     this._renderImageLayer = this._renderImageLayer.bind(this);
+    this._renderPreviewLayer = this._renderPreviewLayer.bind(this);
     this._onRequestToAddImage = this._onRequestToAddImage.bind(this);
     this._onRequestToEditImage = this._onRequestToEditImage.bind(this);
     this._onImageAdd = this._onImageAdd.bind(this);
     this._onImageEdit = this._onImageEdit.bind(this);
     this._onImageRemove = this._onImageRemove.bind(this);
     this._onImageClose = this._onImageClose.bind(this);
+    this._onPostPreview = this._onPostPreview.bind(this);
+    this._onPreviewClose = this._onPreviewClose.bind(this);
 
     this.state = {
       errors: {},
@@ -55,13 +64,19 @@ export default class PostForm extends Component {
       if (!this.state.post.images) {
         this.state.post.images = [];
       }
+
+      const replaceValue = '![$1]($2)';
+      this.state.post.content = (
+        this.state.post.content.replace(/!\[(.*?)\]\((?!http).*?images\/(.*?)\)/g, replaceValue)
+      );
     } else {
       this.state.post = {
         title: undefined,
         author: undefined,
         content: undefined,
         tags: undefined,
-        images: []
+        images: [],
+        previewPost: undefined
       };
     }
   }
@@ -160,6 +175,12 @@ export default class PostForm extends Component {
     image.id = post.images.length;
 
     if (image.cover) {
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        post.coverImage = event.target.result;
+      };
+      reader.readAsDataURL(image.file);
+
       post.images.forEach((image) => image.cover = undefined);
     }
 
@@ -171,6 +192,66 @@ export default class PostForm extends Component {
     let post = {...this.state.post};
     post.images.splice(index, 1);
     this.setState({post: post, imageLayer: false});
+  }
+
+  _onPostPreview (event) {
+    event.preventDefault();
+
+    const previewPost = {...this.state.post};
+
+    if (previewPost.content) {
+      const regex = /!\[(.*?)\]\((?!http)(.*?)\)/g;
+      let content = previewPost.content;
+      let matchingGroup;
+
+      let images = [];
+      do {
+        matchingGroup = regex.exec(content);
+        if (matchingGroup) {
+          images.push(matchingGroup[2]);
+        }
+      } while (matchingGroup);
+
+      if (previewPost.images) {
+        previewPost.images.forEach((image, index) => {
+          const indexOfImage = images.indexOf(image.name);
+          const imageRegex = (
+            new RegExp(`!\\[(.*?)\\]\\((?!http)(${escapeRegExp(image.name)})\\)`, 'g')
+          );
+          if (indexOfImage !== -1 && image.file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              const replaceValue = `![$1](${event.target.result})`;
+              content = content.replace(imageRegex, replaceValue);
+
+              if (index === previewPost.images.length - 1) {
+                previewPost.content = content;
+                this.setState({previewPost: previewPost});
+              }
+            }.bind(this);
+            reader.readAsDataURL(image.file);
+          } else {
+            const replaceValue = (
+              `![$1](${this.props.post.imagePath}/${image.name})`
+            );
+            content = content.replace(imageRegex, replaceValue);
+
+            if (index === previewPost.images.length - 1) {
+              previewPost.content = content;
+              this.setState({previewPost: previewPost});
+            }
+          }
+        }, this);
+      } else {
+        this.setState({previewPost: previewPost});
+      }
+    } else {
+      this.setState({previewPost: previewPost});
+    }
+  }
+
+  _onPreviewClose () {
+    this.setState({previewPost: undefined});
   }
 
   _renderImagesForm () {
@@ -220,6 +301,13 @@ export default class PostForm extends Component {
     );
   }
 
+  _renderPreviewLayer () {
+
+    return (
+      <PreviewPost post={this.state.previewPost} onClose={this._onPreviewClose} />
+    );
+  }
+
   render () {
     const { errors, error } = this.state;
 
@@ -256,17 +344,27 @@ export default class PostForm extends Component {
       imageLayer = this._renderImageLayer();
     }
 
+    let previewLayer;
+    if (this.state.previewPost) {
+      previewLayer = this._renderPreviewLayer();
+    }
+
     return (
       <Article scrollStep={false}>
         <ManageHeader add={true} />
         <Section pad={{ horizontal: 'large' }}
           primary={true}>
           <Form onSubmit={this._onSubmit}>
-            <Header size='large'>
-              <Heading tag='h2' strong={true}>
-                {this.props.heading}
-              </Heading>
-            </Header>
+            <Box responsive={false} direction="row" justify='between'>
+              <Header>
+                <Heading tag='h2' strong={true}>
+                  {this.props.heading}
+                </Heading>
+              </Header>
+              <Box justify="center" pad={{horizontal: 'small'}}>
+                <Anchor href="#" onClick={this._onPostPreview}>Preview</Anchor>
+              </Box>
+            </Box>
             {errorNode}
             <FormFields>
               <fieldset>
@@ -304,6 +402,7 @@ export default class PostForm extends Component {
         </Section>
         <BlogFooter />
         {imageLayer}
+        {previewLayer}
       </Article>
     );
   }

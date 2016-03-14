@@ -15,11 +15,6 @@ $paragraph-large-font-size: 18px;
     @include inuit-font-size($paragraph-large-font-size);
   }
 
-  img {
-    max-width: 400px;
-    width: 100%;
-  }
-
   center {
     max-width: $readable-text-width;
     margin-top: 24px;
@@ -30,6 +25,18 @@ $paragraph-large-font-size: 18px;
     float: left;
     margin-top: 24px;
     margin-right: 25px;
+  }
+
+  figure {
+    max-width: 400px;
+
+    img {
+      width: 100%;
+    }
+
+    figcaption {
+      text-align: center;
+    }
   }
 }
 
