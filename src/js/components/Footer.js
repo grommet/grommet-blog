@@ -6,13 +6,10 @@ import Anchor from 'grommet/components/Anchor';
 import Box from 'grommet/components/Box';
 import Footer from 'grommet/components/Footer';
 import Menu from 'grommet/components/Menu';
-import GrommetLogo from 'grommet/components/icons/Grommet';
 import SocialSlack from 'grommet/components/icons/base/SocialSlack';
 import SocialTwitter from 'grommet/components/icons/base/SocialTwitter';
 import SocialFacebook from 'grommet/components/icons/base/SocialFacebook';
 import SocialVimeo from 'grommet/components/icons/base/SocialVimeo';
-
-const currentYear = new Date().getFullYear();
 
 export default class BlogFooter extends Component {
   render () {
@@ -37,10 +34,12 @@ export default class BlogFooter extends Component {
 
     return (
       <Footer size='small' appCentered={true} colorIndex='light-2'
-        direction='column' primary={true}
+        direction='column' primary={true} justify='between'
         pad={{horizontal: 'medium', vertical: 'medium', between: 'medium'}}>
-        <Box direction='row' justify='between' align='center'>
-          <GrommetLogo />
+        <Box align='center' justify='center'>
+          <span>This work is licensed under the <a href='http://creativecommons.org/licenses/by/4.0/legalcode' target='_blank'>Creative Commons Attribution 4.0 International License.</a></span>
+        </Box>
+        <Box align='center' justify='center'>
           <Menu inline={true} direction='row' size='small'
             align='start' responsive={false}>
             <Anchor href='http://slackin.grommet.io'
@@ -52,11 +51,6 @@ export default class BlogFooter extends Component {
             <Anchor href='https://vimeo.com/grommetux'
               icon={socialVimeo} target='_blank' />
           </Menu>
-        </Box>
-        <Box direction='row' full='horizontal' justify='between' align='center'>
-          <span>
-            <strong>Grommet</strong> {String.fromCharCode(169)} {currentYear} | All rights reserved.
-          </span>
         </Box>
       </Footer>
     );
