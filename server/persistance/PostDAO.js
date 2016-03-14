@@ -252,7 +252,7 @@ export default class PostDAO {
 
   getById (id) {
     return new Promise((resolve, reject) => {
-      getAll().then((posts) => {
+      this.getAll().then((posts) => {
         let matchingPost;
         posts.some((post) => {
           if (post.id === id) {

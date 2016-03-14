@@ -96,7 +96,6 @@ export function deletePost (id) {
   idGroup.pop();
   const postDate = idGroup.join('-');
   const postFolderName = `${postDate}__${postTitle}`;
-  console.log(postFolderName);
   if (process.env.BLOG_PERSISTANCE === 'github') {
     return new GithubPostDAO(postFolderName).delete();
   } else {
