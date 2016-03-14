@@ -107,7 +107,7 @@ function routerProcessor (req, res, next) {
                 `${post.title} | Grommet Blog`
               );
 
-              const keywords = (post.tags || []).join(' ');
+              const keywords = post.tags;
 
               if (post.coverImage) {
                 blogMetadata.blogImage = post.coverImage;
@@ -115,7 +115,9 @@ function routerProcessor (req, res, next) {
 
               blogMetadata.blogPage = post.id;
               blogMetadata.blogKeywords = keywords;
-              blogMetadata.blogDescription = post.content.split('\n')[0];
+              blogMetadata.blogDescription = (
+                post.content.replace(/<(?:.|\n)*?>/gm, '').split('\n')[0]
+              );
               blogMetadata.blogDate = post.createdAt;
 
               res.render('index.ejs', {
