@@ -14,9 +14,11 @@ export default class BlogContext extends Component {
   }
 
   render () {
-    let Tag = this.props.tag || Router;
+    const {tag, renderProps} = this.props;
+
+    let Tag = tag || Router;
     return (
-      <Tag {...this.props.renderProps} />
+      <Tag {...renderProps} />
     );
   }
 };
