@@ -1,42 +1,23 @@
 //for hpe theme, use the following import instead
 $readable-text-width: 960px;
 $form-width: 800px;
-$paragraph-large-font-size: 18px;
 
 @import 'highlight-js.github';
 @import 'grommet/scss/vanilla/index';
 
-.post__title {
-  margin: 2px;
-}
-
 .markdown__container {
-  p {
-    @include inuit-font-size($paragraph-large-font-size);
-  }
-
-  center {
-    max-width: $readable-text-width;
-    margin-top: 24px;
-    margin-bottom: 24px;
-  }
-
-  .thumbnail {
-    float: left;
-    margin-top: 24px;
-    margin-right: 25px;
-  }
-
   figure {
-    max-width: 400px;
-
-    img {
-      width: 100%;
-    }
-
     figcaption {
       text-align: center;
     }
+  }
+
+  blockquote {
+    max-width: $readable-text-width;
+    border-left: 4px solid nth($brand-neutral-colors, 1);
+    background-color: #f8f8f8;
+    padding: 1px $inuit-base-spacing-unit - 4px;
+    display: flex;
   }
 }
 

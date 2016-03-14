@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
+import { renderToString } from 'react-dom/server';
 import { Link } from 'react-router';
 import moment from 'moment';
 import marked from 'marked';
 
 import Box from 'grommet/components/Box';
 import Headline from 'grommet/components/Headline';
+import Paragraph from 'grommet/components/Paragraph';
 
 import SocialFacebook from 'grommet/components/icons/base/SocialFacebook';
 import SocialTwitter from 'grommet/components/icons/base/SocialTwitter';
@@ -25,7 +27,7 @@ hljs.registerLanguage('scss', scss);
 
 var renderer = new marked.Renderer();
 
-renderer.image = function (href, title, text) {
+renderer.image = (href, title, text) => {
   let caption = '';
   if (text && text !== '') {
     caption = `
@@ -42,6 +44,14 @@ renderer.image = function (href, title, text) {
       ${caption}
     </figure>
   `;
+};
+
+renderer.paragraph = (text) => {
+  if (/<[a-z][\s\S]*>/i.exec(text)) {
+    return text;
+  } else {
+    return renderToString(<Paragraph size="large">{text}</Paragraph>);
+  }
 };
 
 marked.setOptions({
@@ -179,7 +189,8 @@ export default class PostBody extends Component {
     return (
       <div>
         {_renderPostHeader(post, preview)}
-        <Box pad={{ horizontal: 'large' }} align="center" justify="center"
+        <Box pad={{ horizontal: 'large', vertical: 'small' }}
+          align="center" justify="center"
           className='markdown__container'>
           <div dangerouslySetInnerHTML={htmlContent} />
         </Box>
