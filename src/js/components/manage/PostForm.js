@@ -20,13 +20,14 @@ import Section from 'grommet/components/Section';
 import AddIcon from 'grommet/components/icons/base/Add';
 import EditIcon from 'grommet/components/icons/base/Edit';
 import SpinningIcon from 'grommet/components/icons/Spinning';
+import CloseIcon from 'grommet/components/icons/base/Close';
 
-import ManageHeader from './Header';
 import PreviewPost from './PreviewPost';
 import ImageForm from './ImageForm';
-import BlogFooter from '../Footer';
 
 import { setDocumentTitle } from '../../utils/blog';
+
+import history from '../../RouteHistory';
 
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -212,7 +213,7 @@ export default class PostForm extends Component {
         }
       } while (matchingGroup);
 
-      if (previewPost.images) {
+      if (previewPost.images.length > 0) {
         previewPost.images.forEach((image, index) => {
           const indexOfImage = images.indexOf(image.name);
           const imageRegex = (
@@ -230,7 +231,7 @@ export default class PostForm extends Component {
               }
             }.bind(this);
             reader.readAsDataURL(image.file);
-          } else {
+          } else if (this.props.post) {
             const replaceValue = (
               `![$1](${this.props.post.imagePath}/${image.name})`
             );
@@ -240,6 +241,8 @@ export default class PostForm extends Component {
               previewPost.content = content;
               this.setState({previewPost: previewPost});
             }
+          } else if (index === previewPost.images.length - 1) {
+            this.setState({previewPost: previewPost});
           }
         }, this);
       } else {
@@ -252,6 +255,10 @@ export default class PostForm extends Component {
 
   _onPreviewClose () {
     this.setState({previewPost: undefined});
+  }
+
+  _onClosePost () {
+    history.push('/manage');
   }
 
   _renderImagesForm () {
@@ -302,9 +309,9 @@ export default class PostForm extends Component {
   }
 
   _renderPreviewLayer () {
-
     return (
-      <PreviewPost post={this.state.previewPost} onClose={this._onPreviewClose} />
+      <PreviewPost post={this.state.previewPost}
+        onClose={this._onPreviewClose} />
     );
   }
 
@@ -351,7 +358,6 @@ export default class PostForm extends Component {
 
     return (
       <Article scrollStep={false}>
-        <ManageHeader add={true} />
         <Section pad={{ horizontal: 'large' }}
           primary={true}>
           <Form onSubmit={this._onSubmit}>
@@ -361,8 +367,9 @@ export default class PostForm extends Component {
                   {this.props.heading}
                 </Heading>
               </Header>
-              <Box justify="center" pad={{horizontal: 'small'}}>
-                <Anchor href="#" onClick={this._onPostPreview}>Preview</Anchor>
+              <Box direction="row" responsive={false}>
+                <Button icon={<CloseIcon />} onClick={this._onClosePost}
+                  a11yTitle='Close Post' />
               </Box>
             </Box>
             {errorNode}
@@ -397,10 +404,12 @@ export default class PostForm extends Component {
             </FormFields>
             <Footer pad={{vertical: 'medium'}}>
               {buttonNode}
+              <Box pad={{horizontal: 'small'}}>
+                <Anchor href="#" onClick={this._onPostPreview}>Preview</Anchor>
+              </Box>
             </Footer>
           </Form>
         </Section>
-        <BlogFooter />
         {imageLayer}
         {previewLayer}
       </Article>

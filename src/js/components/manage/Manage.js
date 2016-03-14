@@ -4,7 +4,6 @@ import moment from 'moment';
 import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
-import Button from 'grommet/components/Button';
 import Footer from 'grommet/components/Footer';
 import Heading from 'grommet/components/Heading';
 import Label from 'grommet/components/Label';
@@ -101,7 +100,8 @@ export default class Manage extends Component {
     );
   }
 
-  _onRequestToDeletePost (post) {
+  _onRequestToDeletePost (post, event) {
+    event.preventDefault();
     this.setState({delete: true, post: post});
   }
 
@@ -155,7 +155,7 @@ export default class Manage extends Component {
             <Box direction="row" responsive={false}>
               <Anchor href={`/manage/post/edit/${post.id}`} icon={editIcon}
                 onClick={this._onEditPost.bind(this, post.id)} />
-              <Button icon={deleteIcon}
+              <Anchor href="#" icon={deleteIcon}
                 onClick={this._onRequestToDeletePost.bind(this, post)} />
             </Box>
           );
