@@ -53,6 +53,7 @@ export default class PostForm extends Component {
     this._onImageClose = this._onImageClose.bind(this);
     this._onPostPreview = this._onPostPreview.bind(this);
     this._onPreviewClose = this._onPreviewClose.bind(this);
+    this._updateCoverImage = this._updateCoverImage.bind(this);
 
     this.state = {
       errors: {},
@@ -160,10 +161,21 @@ export default class PostForm extends Component {
     this.setState({imageLayer: false});
   }
 
+  _updateCoverImage (image) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const post = {...this.state.post};
+      post.coverImage = event.target.result;
+      this.setState({post: post});
+    }.bind(this);
+    reader.readAsDataURL(image.file);
+  }
+
   _onImageEdit (image) {
     let post = {...this.state.post};
 
     if (image.cover) {
+      this._updateCoverImage(image);
       post.images.forEach((image) => image.cover = undefined);
     }
 
@@ -172,16 +184,11 @@ export default class PostForm extends Component {
   }
 
   _onImageAdd (image) {
-    let post = {...this.state.post};
+    const post = {...this.state.post};
     image.id = post.images.length;
 
     if (image.cover) {
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        post.coverImage = event.target.result;
-      };
-      reader.readAsDataURL(image.file);
-
+      this._updateCoverImage(image);
       post.images.forEach((image) => image.cover = undefined);
     }
 
@@ -190,7 +197,7 @@ export default class PostForm extends Component {
   }
 
   _onImageRemove (index) {
-    let post = {...this.state.post};
+    const post = {...this.state.post};
     post.images.splice(index, 1);
     this.setState({post: post, imageLayer: false});
   }
@@ -335,7 +342,7 @@ export default class PostForm extends Component {
 
     if (this.state.adding && !error) {
       buttonNode = (
-        <Box direction="row">
+        <Box direction="row" responsive={false}>
           <Box justify="center">
             <SpinningIcon />
           </Box>

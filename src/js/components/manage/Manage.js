@@ -77,7 +77,12 @@ export default class Manage extends Component {
     if (archive && Object.keys(archive).length === 0) {
       archive = undefined;
     }
-    this.setState({ archive: archive, loading: false });
+    this.setState({
+      archive: archive,
+      loading: false,
+      deleting: false,
+      post: undefined
+    });
   }
 
   _onArchiveFailed () {
@@ -110,7 +115,6 @@ export default class Manage extends Component {
   }
 
   _onDeleteSucceed (archive) {
-    this.setState({deleting: false, post: undefined});
     store.getArchive('/manage').then(
       this._onArchiveReceived, this._onArchiveFailed
     );
@@ -139,7 +143,7 @@ export default class Manage extends Component {
         let footerNode;
         if (this.state.deleting && this.state.post.id === post.id) {
           footerNode = (
-            <Box direction="row">
+            <Box direction="row" responsive={false}>
               <Box justify="center">
                 <SpinningIcon />
               </Box>

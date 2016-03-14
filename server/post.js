@@ -54,8 +54,8 @@ router.post('/', auth, function (req, res) {
       let image = req.files[key];
       if (image.name === coverName) {
         image.cover = true;
-        images.push(image);
       }
+      images.push(image);
     });
   }
 
