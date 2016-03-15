@@ -11,4 +11,14 @@ export function setDocumentTitle (title) {
     }
     document.title = title;
   }
-};
+}
+
+export function getImageAsBase64 (image) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      resolve(event.target.result);
+    }.bind(this);
+    reader.readAsDataURL(image.file);
+  });
+}

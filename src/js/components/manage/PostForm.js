@@ -25,12 +25,28 @@ import CloseIcon from 'grommet/components/icons/base/Close';
 import PreviewPost from './PreviewPost';
 import ImageForm from './ImageForm';
 
-import { setDocumentTitle } from '../../utils/blog';
+import { setDocumentTitle, getImageAsBase64 } from '../../utils/blog';
 
 import history from '../../RouteHistory';
 
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+function getContentImages (previewContent) {
+  const regex = /!\[(.*?)\]\((?!http)(.*?)\)/g;
+  let content = previewContent;
+  let matchingGroup;
+
+  let images = [];
+  do {
+    matchingGroup = regex.exec(content);
+    if (matchingGroup) {
+      images.push(matchingGroup[2]);
+    }
+  } while (matchingGroup);
+
+  return images;
 }
 
 export default class PostForm extends Component {
@@ -162,13 +178,11 @@ export default class PostForm extends Component {
   }
 
   _updateCoverImage (image) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
+    getImageAsBase64(image).then((imageAsBase64) => {
       const post = {...this.state.post};
-      post.coverImage = event.target.result;
+      post.coverImage = imageAsBase64;
       this.setState({post: post});
-    }.bind(this);
-    reader.readAsDataURL(image.file);
+    });
   }
 
   _onImageEdit (image) {
@@ -207,54 +221,39 @@ export default class PostForm extends Component {
 
     const previewPost = {...this.state.post};
 
-    if (previewPost.content) {
-      const regex = /!\[(.*?)\]\((?!http)(.*?)\)/g;
-      let content = previewPost.content;
-      let matchingGroup;
+    if (previewPost.content && previewPost.images.length > 0) {
+      let images = getContentImages(previewPost.content);
+      previewPost.images.forEach((image, index) => {
+        const indexOfImage = images.indexOf(image.name);
+        const imageRegex = (
+          new RegExp(`!\\[(.*?)\\]\\((?!http)(${escapeRegExp(image.name)})\\)`, 'g')
+        );
+        if (indexOfImage !== -1 && image.file) {
+          getImageAsBase64(image).then((imageAsBase64) => {
+            const replaceValue = `![$1](${imageAsBase64})`;
+            previewPost.content = previewPost.content.replace(
+              imageRegex, replaceValue
+            );
 
-      let images = [];
-      do {
-        matchingGroup = regex.exec(content);
-        if (matchingGroup) {
-          images.push(matchingGroup[2]);
-        }
-      } while (matchingGroup);
-
-      if (previewPost.images.length > 0) {
-        previewPost.images.forEach((image, index) => {
-          const indexOfImage = images.indexOf(image.name);
-          const imageRegex = (
-            new RegExp(`!\\[(.*?)\\]\\((?!http)(${escapeRegExp(image.name)})\\)`, 'g')
-          );
-          if (indexOfImage !== -1 && image.file) {
-            const reader = new FileReader();
-            reader.onload = function (event) {
-              const replaceValue = `![$1](${event.target.result})`;
-              content = content.replace(imageRegex, replaceValue);
-
-              if (index === previewPost.images.length - 1) {
-                previewPost.content = content;
-                this.setState({previewPost: previewPost});
-              }
-            }.bind(this);
-            reader.readAsDataURL(image.file);
-          } else if (this.props.post) {
+            if (index === previewPost.images.length - 1) {
+              this.setState({previewPost: previewPost});
+            }
+          });
+        } else {
+          if (this.props.post) {
+            // on edit we need to replace image path back to existing updated img
             const replaceValue = (
               `![$1](${this.props.post.imagePath}/${image.name})`
             );
-            content = content.replace(imageRegex, replaceValue);
-
-            if (index === previewPost.images.length - 1) {
-              previewPost.content = content;
-              this.setState({previewPost: previewPost});
-            }
-          } else if (index === previewPost.images.length - 1) {
+            previewPost.content = previewPost.content.replace(
+              imageRegex, replaceValue
+            );
+          }
+          if (index === previewPost.images.length - 1) {
             this.setState({previewPost: previewPost});
           }
-        }, this);
-      } else {
-        this.setState({previewPost: previewPost});
-      }
+        }
+      }, this);
     } else {
       this.setState({previewPost: previewPost});
     }
