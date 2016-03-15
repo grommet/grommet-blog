@@ -48,10 +48,13 @@ const BASE_GITHUB_CONFIG = {
   base: 'master'
 };
 
-github.authenticate({
-  type: 'oauth',
-  token: TOKEN
-});
+if (process.env.BLOG_PERSISTANCE === 'github') {
+  github.authenticate({
+    type: 'oauth',
+    token: TOKEN
+  });
+}
+
 
 export default class GithubPostDAO extends PostDAO {
   constructor (postFolderName, content, metadata, images) {
