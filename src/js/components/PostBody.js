@@ -6,12 +6,17 @@ import marked from 'marked';
 
 import Box from 'grommet/components/Box';
 import Headline from 'grommet/components/Headline';
+import Footer from 'grommet/components/Footer';
 import Paragraph from 'grommet/components/Paragraph';
+import Tags from 'grommet/components/Tags';
+import Tag from 'grommet/components/Tag';
 
 import SocialFacebook from 'grommet/components/icons/base/SocialFacebook';
 import SocialTwitter from 'grommet/components/icons/base/SocialTwitter';
 import SocialLinkedin from 'grommet/components/icons/base/SocialLinkedin';
 import SocialReddit from 'grommet/components/icons/base/SocialReddit';
+
+import history from '../RouteHistory';
 
 //hjjs configuration
 import hljs from 'highlight.js/lib/highlight';
@@ -63,6 +68,11 @@ marked.setOptions({
 
 function _onSocialClick (event) {
   event.preventDefault();
+}
+
+function _onArchiveTag (tag, event) {
+  event.preventDefault();
+  history.push(`/archive/tag/${tag}`);
 }
 
 function _renderPostHeader (post, preview) {
@@ -168,6 +178,30 @@ function _updateNodes (post, preview) {
   }
 }
 
+function _renderTags (tags, preview) {
+  let tagsNode = tags.split(', ').map(
+    (tag, index) => {
+      let handlers = {};
+      if (!preview) {
+        handlers.onClick = _onArchiveTag.bind(this, tag);
+        handlers.href= `/archive/tag/${tag}`;
+      }
+      return (
+        <Tag key={index} label={tag}
+          {...handlers} />
+      );
+    }
+  );
+  return (
+    <Footer pad='large' direction='column' justify='center' align='center'>
+      <h3>Tags:</h3>
+      <Tags pad={{horizontal: 'small'}}>
+        {tagsNode}
+      </Tags>
+    </Footer>
+  );
+}
+
 export default class PostBody extends Component {
 
   componentDidMount () {
@@ -186,6 +220,10 @@ export default class PostBody extends Component {
       __html: marked(post.content || 'POST_CONTENT')
     };
 
+    let footerNode;
+    if (post.tags) {
+      footerNode = _renderTags(post.tags, preview);
+    }
     return (
       <div>
         {_renderPostHeader(post, preview)}
@@ -194,6 +232,7 @@ export default class PostBody extends Component {
           className='markdown__container'>
           <div dangerouslySetInnerHTML={htmlContent} />
         </Box>
+        {footerNode}
       </div>
     );
   }
