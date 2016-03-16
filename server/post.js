@@ -2,7 +2,7 @@
 
 import express, { Router } from 'express';
 import basicAuth from 'basic-auth-connect';
-import moment from 'moment';
+import fecha from 'fecha';
 import path from 'path';
 import {
   loadPosts,
@@ -186,7 +186,7 @@ router.get('/archive/:year/:month/:day', function (req, res) {
 
   Object.keys(monthPosts).forEach((monthLabel) => {
     monthPosts[monthLabel] = monthPosts[monthLabel].filter((post) => {
-      let day = moment(post.createdAt).format('DD');
+      let day = fecha.format(new Date(post.createdAt), 'DD');
       return day === req.params.day;
     });
 

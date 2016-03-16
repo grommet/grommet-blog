@@ -1,7 +1,7 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
 
 import React, { Component, PropTypes } from 'react';
-import moment from 'moment';
+import fecha from 'fecha';
 import { Link } from 'react-router';
 
 import Article from 'grommet/components/Article';
@@ -90,8 +90,8 @@ export default class Home extends Component {
         <Footer />
       );
       postsNode = this.posts.map((post, index) => {
-        let formattedDate = moment(post.createdAt).format(
-          'MMMM D, YYYY'
+        let formattedDate = fecha.format(
+          new Date(post.createdAt), 'MMMM D, YYYY'
         );
 
         let backgroundOptions = {};

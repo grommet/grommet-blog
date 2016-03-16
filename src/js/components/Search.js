@@ -2,7 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import moment from 'moment';
+import fecha from 'fecha';
 
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
@@ -96,12 +96,12 @@ export default class BlogSearch extends Component {
 
   _renderPosts () {
     let posts = this.posts.map((post, index) => {
-      let date = moment(post.createdAt);
-      let day = date.format('DD');
-      let month = date.format('MM');
-      let year = date.format('YYYY');
-      let formattedDate = date.format(
-        'MMMM D, YYYY'
+      const createdAtDate = new Date(post.createdAt);
+      let day = fecha.format(createdAtDate, 'DD');
+      let month = fecha.format(createdAtDate, 'MM');
+      let year = fecha.format(createdAtDate, 'YYYY');
+      let formattedDate = fecha.format(
+        createdAtDate, 'MMMM D, YYYY'
       );
       let formattedAuthor = post.author.replace(' ', '').toLowerCase();
       return (

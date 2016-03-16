@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import moment from 'moment';
+import fecha from 'fecha';
 
 import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
@@ -132,9 +132,8 @@ export default class Manage extends Component {
     let monthKeys = Object.keys(this.archive);
     return monthKeys.map((monthLabel, index) => {
       let posts = this.archive[monthLabel].map((post, index) => {
-        let date = moment(post.createdAt);
-        let formattedDate = date.format(
-          'MMMM D, YYYY'
+        let formattedDate = fecha.format(
+          new Date(post.createdAt), 'MMMM D, YYYY'
         );
 
         //pick a range from 0 - 4 based on the current index.

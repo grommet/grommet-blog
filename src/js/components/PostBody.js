@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { renderToString } from 'react-dom/server';
 import { Link } from 'react-router';
-import moment from 'moment';
+import fecha from 'fecha';
 import marked from 'marked';
 
 import Box from 'grommet/components/Box';
@@ -76,12 +76,13 @@ function _onArchiveTag (tag, event) {
 }
 
 function _renderPostHeader (post, preview) {
-  let date = moment(post.createdAt);
-  let day = date.format('DD');
-  let month = date.format('MM');
-  let year = date.format('YYYY');
-  let formattedDate = date.format(
-    'MMMM D, YYYY'
+  const createdAtDate = post.createdAt ?
+    new Date(post.createdAt): new Date();
+  let day = fecha.format(createdAtDate, 'DD');
+  let month = fecha.format(createdAtDate, 'MM');
+  let year = fecha.format(createdAtDate, 'YYYY');
+  let formattedDate = fecha.format(
+    createdAtDate, 'MMMM D, YYYY'
   );
 
   const author = post.author || 'AUTHOR_NAME';
