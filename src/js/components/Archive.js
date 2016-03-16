@@ -1,7 +1,7 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
 
 import React, { Component, PropTypes } from 'react';
-import moment from 'moment';
+import fecha from 'fecha';
 import { Link } from 'react-router';
 
 import Article from 'grommet/components/Article';
@@ -74,12 +74,12 @@ export default class Archive extends Component {
   _renderArchive () {
     return Object.keys(this.archive).map((monthLabel, index) => {
       let posts = this.archive[monthLabel].map((post, index) => {
-        let date = moment(post.createdAt);
-        let day = date.format('DD');
-        let month = date.format('MM');
-        let year = date.format('YYYY');
-        let formattedDate = date.format(
-          'MMMM D, YYYY'
+        const createAtDate = new Date(post.createdAt);
+        let day = fecha.format(createAtDate, 'DD');
+        let month = fecha.format(createAtDate, 'MM');
+        let year = fecha.format(createAtDate, 'YYYY');
+        let formattedDate = fecha.format(
+          createAtDate, 'MMMM D, YYYY'
         );
         let formattedAuthor = post.author.replace(' ', '').toLowerCase();
         return (

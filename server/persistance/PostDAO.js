@@ -1,7 +1,7 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
 
 import mkdirp from 'mkdirp';
-import moment from 'moment';
+import fecha from 'fecha';
 import rimraf from 'rimraf';
 import path from 'path';
 import fs from 'fs';
@@ -181,9 +181,13 @@ export default class PostDAO {
     return new Promise((resolve, reject) => {
       this.postFolder = path.join(root, `server/posts/${this.postFolderName}`);
 
-      const createdDate = moment(this.metadata.createdAt);
-      const previousDateFormat = createdDate.format('YYYY-MM-DD');
-      const idDateFormat = createdDate.format('YYYY/MM/DD');
+      const createAtDate = new Date(this.metadata.createdAt);
+      const previousDateFormat = fecha.format(
+        createAtDate, 'YYYY-MM-DD'
+      );
+      const idDateFormat = fecha.format(
+        createAtDate, 'YYYY/MM/DD'
+      );
 
       let titleGroups = this.metadata.id.split('/');
       let previousTitleId = titleGroups[titleGroups.length - 1];

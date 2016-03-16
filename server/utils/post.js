@@ -1,7 +1,7 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
 
 import path from 'path';
-import moment from 'moment';
+import fecha from 'fecha';
 import lunr from 'lunr';
 
 import GithubPostDAO from '../persistance/GithubPostDAO';
@@ -17,8 +17,8 @@ export function getPostById (id) {
 
 export function postsMonthMap (posts) {
   return posts.reduce((postMap, post) => {
-    let monthLabel = moment(post.createdAt).format(
-      'MMMM, YYYY'
+    let monthLabel = fecha.format(
+      new Date(post.createdAt), 'MMMM, YYYY'
     );
     if (postMap.hasOwnProperty(monthLabel)) {
       postMap[monthLabel].push(post);
@@ -30,8 +30,8 @@ export function postsMonthMap (posts) {
 }
 
 export function filterPostsMapByMonth (postsByMonth, year, month) {
-  let monthLabel = moment([year, month - 1]).format(
-    'MMMM, YYYY'
+  let monthLabel = fecha.format(
+    new Date(year, month - 1), 'MMMM, YYYY'
   );
 
   let archive = {};
@@ -59,9 +59,9 @@ export function buildSearchIndex (posts) {
 export function addPost (content, metadata, images) {
   const titleId = metadata.title.replace(/ /g, '-').toLowerCase();
 
-  const today = moment();
-  const idDateFormat = today.format('YYYY/MM/DD');
-  const folderDateFormat = today.format('YYYY-MM-DD');
+  const today = new Date();
+  const idDateFormat = fecha.format(today, 'YYYY/MM/DD');
+  const folderDateFormat = fecha.format(today, 'YYYY-MM-DD');
 
   metadata.id = `${idDateFormat}/${titleId}`;
   metadata.createdAt = today;
@@ -78,7 +78,9 @@ export function addPost (content, metadata, images) {
 
 export function editPost (content, metadata, images) {
   const titleId = metadata.title.replace(/ /g, '-').toLowerCase();
-  const folderDateFormat = moment(metadata.createdAt).format('YYYY-MM-DD');
+  const folderDateFormat = fecha.format(
+    new Date(metadata.createdAt), 'YYYY-MM-DD'
+  );
   const postFolderName = `${folderDateFormat}__${titleId}`;
 
   if (process.env.BLOG_PERSISTANCE === 'github') {
