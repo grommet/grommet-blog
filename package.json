@@ -21,7 +21,7 @@
     "gulp": "^3.9.0",
     "highlight.js": "^9.2.0",
     "lunr": "^0.6.0",
-    "marked": "^0.3.5",
+    "markdown-to-jsx": "^2.0.0",
     "morgan": "^1.5.0",
     "node-sass": "^3.4.2",
     "react-disqus-thread": "^0.3.1",

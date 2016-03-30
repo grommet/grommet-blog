@@ -5,20 +5,12 @@ $form-width: 800px;
 @import 'highlight-js.github';
 @import 'grommet/scss/vanilla/index';
 
-.markdown__container {
-  figure {
-    figcaption {
-      text-align: center;
-    }
-  }
-
-  blockquote {
-    max-width: $readable-text-width;
-    border-left: 4px solid nth($brand-neutral-colors, 1);
-    background-color: #f8f8f8;
-    padding: 1px $inuit-base-spacing-unit - 4px;
-    display: flex;
-  }
+blockquote {
+  max-width: $readable-text-width;
+  border-left: 4px solid nth($brand-neutral-colors, 1);
+  background-color: #f8f8f8;
+  padding: 1px $inuit-base-spacing-unit - 4px;
+  display: flex;
 }
 
 .grommet a:not(.anchor):hover,

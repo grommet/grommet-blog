@@ -6,6 +6,7 @@ import { Link } from 'react-router';
 import Box from 'grommet/components/Box';
 import Anchor from 'grommet/components/Anchor';
 import Header from 'grommet/components/Header';
+import Heading from 'grommet/components/Heading';
 import Title from 'grommet/components/Title';
 import GrommetLogo from 'grommet/components/icons/Grommet';
 
@@ -32,7 +33,7 @@ export default class BlogHeader extends Component {
       <Link to="/">
         <Title responsive={false}>
           <GrommetLogo a11yTitle=""/>
-          Blog
+          <Heading tag="h3" strong={true}>Blog</Heading>
         </Title>
       </Link>
     );
