@@ -1,15 +1,17 @@
 import React, {Component} from 'react';
-import { renderToString } from 'react-dom/server';
 import { Link } from 'react-router';
 import fecha from 'fecha';
-import marked from 'marked';
+import converter from 'markdown-to-jsx';
 
 import Box from 'grommet/components/Box';
 import Headline from 'grommet/components/Headline';
 import Footer from 'grommet/components/Footer';
-import Paragraph from 'grommet/components/Paragraph';
 import Tags from 'grommet/components/Tags';
 import Tag from 'grommet/components/Tag';
+import Anchor from 'grommet/components/Anchor';
+import Paragraph from 'grommet/components/Paragraph';
+import Heading from 'grommet/components/Heading';
+import Image from 'grommet/components/Image';
 
 import SocialFacebook from 'grommet/components/icons/base/SocialFacebook';
 import SocialTwitter from 'grommet/components/icons/base/SocialTwitter';
@@ -29,42 +31,6 @@ hljs.registerLanguage('bash', bash);
 hljs.registerLanguage('xml', xml);
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('scss', scss);
-
-var renderer = new marked.Renderer();
-
-renderer.image = (href, title, text) => {
-  let caption = '';
-  if (text && text !== '') {
-    caption = `
-      <figcaption>
-       ${text}
-      </figcaption>
-    `;
-  }
-  return `
-    <figure>
-      <a href=${href} target="_blank">
-        <img src=${href} alt=${text} />
-      </a>
-      ${caption}
-    </figure>
-  `;
-};
-
-renderer.paragraph = (text) => {
-  if (/<[a-z][\s\S]*>/i.exec(text)) {
-    return text;
-  } else {
-    return renderToString(<Paragraph size="large">{text}</Paragraph>);
-  }
-};
-
-marked.setOptions({
-  renderer: renderer,
-  highlight: function (code) {
-    return hljs.highlightAuto(code).value;
-  }
-});
 
 function _onSocialClick (event) {
   event.preventDefault();
@@ -217,21 +183,53 @@ export default class PostBody extends Component {
 
   render () {
     const { post, preview } = this.props;
-    let htmlContent = {
-      __html: marked(post.content || 'POST_CONTENT')
-    };
 
     let footerNode;
     if (post.tags) {
       footerNode = _renderTags(post.tags, preview);
     }
+
+    let options = {
+      p: {
+        component: Paragraph,
+        props: {
+          size: 'large'
+        }
+      },
+      a: {
+        component: Anchor,
+        props: {
+          target: '_blank',
+          onClick: function (event) {
+            event.preventDefault();
+            if (preview) {
+              console.warn('No actions allowed in preview mode');
+            } else {
+              console.log(event);
+            }
+          }
+        }
+      },
+      h3: {
+        component: Heading,
+        props: {
+          tag: 'h3'
+        }
+      },
+      img: {
+        component: Image,
+        props: {
+          caption: true
+        }
+      }
+    };
+
     return (
       <div>
         {_renderPostHeader(post, preview)}
         <Box pad={{ horizontal: 'large', vertical: 'small' }}
-          align="center" justify="center"
-          className='markdown__container'>
-          <div dangerouslySetInnerHTML={htmlContent} />
+          align="center" justify="center">
+          {converter(post.content || 'POST_CONTENT', {}, options)}
         </Box>
         {footerNode}
       </div>
