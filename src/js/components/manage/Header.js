@@ -27,7 +27,7 @@ export default class BlogHeader extends Component {
       <Link to="/">
         <Title responsive={false}>
           <GrommetLogo a11yTitle=""/>
-          <Heading tag="h3" strong={true}>Blog</Heading>
+          <Heading tag="h3">Blog</Heading>
         </Title>
       </Link>
     );

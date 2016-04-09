@@ -1,17 +1,13 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router';
 import fecha from 'fecha';
-import converter from 'markdown-to-jsx';
 
 import Box from 'grommet/components/Box';
-import Headline from 'grommet/components/Headline';
+import Heading from 'grommet/components/Heading';
 import Footer from 'grommet/components/Footer';
 import Tags from 'grommet/components/Tags';
 import Tag from 'grommet/components/Tag';
-import Anchor from 'grommet/components/Anchor';
-import Paragraph from 'grommet/components/Paragraph';
-import Heading from 'grommet/components/Heading';
-import Image from 'grommet/components/Image';
+import Markdown from 'grommet/components/Markdown';
 
 import SocialFacebook from 'grommet/components/icons/base/SocialFacebook';
 import SocialTwitter from 'grommet/components/icons/base/SocialTwitter';
@@ -70,25 +66,27 @@ function _renderPostHeader (post, preview) {
   let secondaryHeader;
   if (preview) {
     secondaryHeader = (
-      <h3>
+      <Heading tag='h3' strong={true}>
         Posted {formattedDate} by {author}
-      </h3>
+      </Heading>
     );
   } else {
     secondaryHeader = (
-      <h3>
+      <Heading tag='h3' strong={true}>
         Posted <Link to={`/archive/${year}/${month}/${day}`}>
           {formattedDate}
         </Link> by <Link to={`/archive/author/${formattedAuthor}`}>
           {author}
         </Link>
-      </h3>
+      </Heading>
     );
   }
   return (
     <Box pad='large' colorIndex='neutral-2' {...backgroundOptions}
       align='center' justify='center'>
-      <Headline><strong>{post.title || 'POST_TITLE'}</strong></Headline>
+      <Heading strong={true}>
+        {post.title || 'POST_TITLE'}
+      </Heading>
       {secondaryHeader}
       <div data-addthis-url={target}
         data-addthis-title={post.title} className='addthis_toolbox'>
@@ -189,37 +187,37 @@ export default class PostBody extends Component {
       footerNode = _renderTags(post.tags, preview);
     }
 
-    let options = {
+    let components = {
       p: {
-        component: Paragraph,
         props: {
           size: 'large'
         }
       },
       a: {
-        component: Anchor,
         props: {
           target: '_blank',
           onClick: function (event) {
-            event.preventDefault();
             if (preview) {
+              event.preventDefault();
               console.warn('No actions allowed in preview mode');
             } else {
-              console.log(event);
+              const href = event.currentTarget.getAttribute("href");
+              if (!/^(http|https):\/\//.exec(href)) {
+                event.preventDefault();
+                history.push(href);
+              }
             }
           }
         }
       },
-      h3: {
-        component: Heading,
+      img: {
         props: {
-          tag: 'h3'
+          size: 'small'
         }
       },
-      img: {
-        component: Image,
+      h3: {
         props: {
-          caption: true
+          strong: true
         }
       }
     };
@@ -228,8 +226,11 @@ export default class PostBody extends Component {
       <div>
         {_renderPostHeader(post, preview)}
         <Box pad={{ horizontal: 'large', vertical: 'small' }}
-          align="center" justify="center">
-          {converter(post.content || 'POST_CONTENT', {}, options)}
+          align='center' justify='center'>
+          <Box className='post-body'>
+            <Markdown content={post.content || 'POST_CONTENT'}
+              components={components} />
+          </Box>
         </Box>
         {footerNode}
       </div>

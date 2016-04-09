@@ -5,6 +5,11 @@ $form-width: 800px;
 @import 'highlight-js.github';
 @import 'grommet/scss/vanilla/index';
 
+.post-body {
+  width: $readable-text-width;
+  max-width: 100%;
+}
+
 blockquote {
   max-width: $readable-text-width;
   border-left: 4px solid nth($brand-neutral-colors, 1);

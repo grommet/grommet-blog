@@ -2,7 +2,11 @@
   "id": "2015/11/23/what-is-grommet",
   "title": "What is Grommet?",
   "author": "Eric Soderberg",
-  "tags": ["grommet", "reactjs", "javascript"],
+  "tags": [
+    "grommet",
+    "reactjs",
+    "javascript"
+  ],
   "coverImage": "cover.jpg",
   "createdAt": "2015-11-23T19:59:25.865Z"
 }

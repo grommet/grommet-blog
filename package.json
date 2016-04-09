@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "main": "src/js/index.js",
   "dependencies": {
-    "babel-plugin-array-includes": "^2.0.3",
-    "babel-plugin-transform-object-rest-spread": "^6.5.0",
-    "babel-register": "^6.5.2",
-    "basic-auth-connect": "^1.0.0",
     "body-parser": "^1.10.0",
     "busboy-body-parser": "0.0.10",
     "classnames": "^2.2.3",
@@ -18,7 +14,6 @@
     "github": "^0.2.4",
     "grommet": "https://github.com/grommet/grommet/tarball/stable",
     "grommet-templates": "https://github.com/grommet/grommet-templates/tarball/stable",
-    "gulp": "^3.9.0",
     "highlight.js": "^9.2.0",
     "lunr": "^0.6.0",
     "markdown-to-jsx": "^2.0.0",
@@ -35,7 +30,13 @@
   },
   "devDependencies": {
     "argv": "0.0.2",
+    "babel-plugin-array-includes": "^2.0.3",
+    "babel-plugin-transform-object-rest-spread": "^6.5.0",
+    "babel-register": "^6.5.2",
+    "basic-auth-connect": "^1.0.0",
     "del": "^2.2.0",
+    "grommet-toolbox": "^0.1.13",
+    "gulp": "^3.9.0",
     "gulp-git": "^1.7.0",
     "mkdirp": "^0.5.1"
   },
