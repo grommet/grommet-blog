@@ -57,7 +57,8 @@ export function buildSearchIndex (posts) {
 }
 
 export function addPost (content, metadata, images) {
-  const titleId = metadata.title.replace(/ /g, '-').toLowerCase();
+  const titleId = metadata.title
+    .replace(/ /g, '-').replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase();
 
   const today = new Date();
   const idDateFormat = fecha.format(today, 'YYYY/MM/DD');
@@ -77,7 +78,8 @@ export function addPost (content, metadata, images) {
 }
 
 export function editPost (content, metadata, images) {
-  const titleId = metadata.title.replace(/ /g, '-').toLowerCase();
+  const titleId = metadata.title
+    .replace(/ /g, '-').replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase();
   const folderDateFormat = fecha.format(
     new Date(metadata.createdAt), 'YYYY-MM-DD'
   );

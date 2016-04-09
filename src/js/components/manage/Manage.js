@@ -131,13 +131,14 @@ export default class Manage extends Component {
   _renderArchive () {
     let monthKeys = Object.keys(this.archive);
     return monthKeys.map((monthLabel, index) => {
-      let posts = this.archive[monthLabel].map((post, index) => {
+      const postsByMonth = this.archive[monthLabel];
+      let posts = postsByMonth.map((post, index) => {
         let formattedDate = fecha.format(
           new Date(post.createdAt), 'MMMM D, YYYY'
         );
 
         //pick a range from 0 - 4 based on the current index.
-        const colorIndex = Math.round(index * 4 / monthKeys.length);
+        const colorIndex = Math.round(index * 4 / postsByMonth.length);
 
         let footerNode;
         if (this.state.deleting && this.state.post.id === post.id) {

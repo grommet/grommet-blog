@@ -201,7 +201,8 @@ export default class PostDAO {
         path.join(root, `server/posts/${this.postFolderName}`)
       );
 
-      const titleId = this.metadata.title.replace(/ /g, '-').toLowerCase();
+      const titleId = this.metadata.title
+        .replace(/ /g, '-').replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase();
       this.metadata.id = `${idDateFormat}/${titleId}`;
 
       if (fs.existsSync(previousFolder)) {
