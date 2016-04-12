@@ -137,9 +137,6 @@ export default class Manage extends Component {
           new Date(post.createdAt), 'MMMM D, YYYY'
         );
 
-        //pick a range from 0 - 4 based on the current index.
-        const colorIndex = Math.round(index * 4 / postsByMonth.length);
-
         let footerNode;
         if (this.state.deleting && this.state.post.id === post.id) {
           footerNode = (
@@ -165,7 +162,7 @@ export default class Manage extends Component {
           );
         }
 
-        let colorIndexProp = `neutral-${colorIndex + 1}`;
+        let colorIndexProp = 'neutral-1';
         if (post.pending) {
           colorIndexProp = 'disabled';
           footerNode = (
