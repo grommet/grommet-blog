@@ -66,7 +66,7 @@ function _renderPostHeader (post, preview) {
   let secondaryHeader;
   if (preview) {
     secondaryHeader = (
-      <Heading tag='h3' strong={true}>
+      <Heading tag='h3' strong={true} align='center'>
         Posted {formattedDate} by {author}
       </Heading>
     );
@@ -212,7 +212,7 @@ export default class PostBody extends Component {
       },
       img: {
         props: {
-          size: 'small'
+          size: 'medium'
         }
       },
       h3: {
