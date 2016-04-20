@@ -1,5 +1,4 @@
 Our own Grommet developer, Alan Souza, recently kicked off the Grommet training series with our first tutorial. In it, Alan explains how viewers can get started with Grommet.
-
 By the end of this video you will be able to:
 
 * Install Grommet using Node/NPM
