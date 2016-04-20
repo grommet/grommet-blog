@@ -1,5 +1,8 @@
 > This article was originally posted on [ProgrammableWeb](http://www.programmableweb.com/news/top-5-rules-giving-enterprise-apps-consumer-grade-ux/analysis/2016/01/26).
 
+What does a single
+line break look like? 
+
 Software users in the consumer market have come to expect what is referred to as the “consumer-grade user experience.” It usually goes something like this: a consumer downloads an app from an app store and if it doesn’t meet their needs, they delete it and move on to the next one. Consumers expect the app to get them started quickly through an inviting and straightforward introductory experience. They do not attend training or read manuals and use applications by choice, not because they are required to do so.
 
 Generally speaking, the traditional enterprise user experience is the antithesis of the consumer grade user experience. Many enterprise applications were not designed with simplicity, clarity and ease-of-use in mind. Some were not even designed to scale according to the demands of today’s enterprises.
