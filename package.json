@@ -15,6 +15,7 @@
     "ejs": "^2.4.1",
     "express": "^4.10.6",
     "fecha": "^2.0.0",
+    "fs-extra": "^0.28.0",
     "github": "^0.2.4",
     "grommet": "https://github.com/grommet/grommet/tarball/stable",
     "grommet-templates": "https://github.com/grommet/grommet-templates/tarball/stable",

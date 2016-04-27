@@ -131,7 +131,12 @@ router.get('/archive/', function (req, res) {
 router.get('/manage/', function (req, res) {
   if (process.env.BLOG_PERSISTANCE === 'github') {
     getAllPosts().then(
-      (allPosts) => res.send(postsMonthMap(allPosts)),
+      (allPosts) => {
+        allPosts = allPosts.sort((post1, post2) => {
+          return new Date(post2.createdAt) - new Date(post1.createdAt);
+        });
+        res.send(postsMonthMap(allPosts));
+      },
       (err) => res.status(500).json({ error: err.toString() })
     );
   } else {

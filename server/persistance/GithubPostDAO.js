@@ -1,6 +1,7 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
 
 import path from 'path';
+import fs from 'fs-extra';
 
 //TODO: temporary
 import Git from 'simple-git/src/git';
@@ -54,7 +55,6 @@ if (process.env.BLOG_PERSISTANCE === 'github') {
     token: TOKEN
   });
 }
-
 
 export default class GithubPostDAO extends PostDAO {
   constructor (postFolderName, content, metadata, images) {
@@ -141,26 +141,26 @@ export default class GithubPostDAO extends PostDAO {
   _loadPostMetadata (post) {
     return new Promise((resolve, reject) => {
       let postBranch = `${post.action}_${post.title}`;
-      let ROOT = path.resolve(`/tmp/${postBranch}/${PROJECT_NAME}`);
-      del.sync([ROOT], { force: true });
-      simpleGit()
-        .clone(
-          `https://${TOKEN}@github.com/${USER}/${PROJECT_NAME}.git`,
-          ROOT
-        ).then(() => {
+      const postRoot = path.resolve(`/tmp/${postBranch}/${PROJECT_NAME}`);
+      del.sync([postRoot], { force: true });
+      fs.copy(ROOT, postRoot, (err) => {
+        if (err) {
+          reject(err);
+        } else {
           if (post.action === 'Delete') {
-            simpleGit(ROOT)
+            simpleGit(postRoot)
               .then(() => {
-                super.get(ROOT, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
+                super.get(postRoot, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
               });
           } else {
-            simpleGit(ROOT)
+            simpleGit(postRoot)
               .checkout(postBranch)
               .then(() => {
-                super.get(ROOT, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
+                super.get(postRoot, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
               });
           }
-        });
+        }
+      });
     });
   }
 
@@ -241,7 +241,9 @@ export default class GithubPostDAO extends PostDAO {
             );
 
           if (pendingPostsPR && pendingPostsPR.length > 0) {
-            this._mapPosts(pendingPostsPR).then(resolve, reject);
+            this._clone().then(() => {
+              this._mapPosts(pendingPostsPR).then(resolve, reject);
+            }, reject);
           } else {
             resolve([]);
           }
