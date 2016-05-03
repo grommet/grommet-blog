@@ -4,6 +4,7 @@ import fecha from 'fecha';
 import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
+import Button from 'grommet/components/Button';
 import Footer from 'grommet/components/Footer';
 import Heading from 'grommet/components/Heading';
 import Label from 'grommet/components/Label';
@@ -12,12 +13,14 @@ import Tile from 'grommet/components/Tile';
 import Tiles from 'grommet/components/Tiles';
 
 import EditIcon from 'grommet/components/icons/base/Edit';
+import CloseIcon from 'grommet/components/icons/base/Close';
 import DeleteIcon from 'grommet/components/icons/base/Trash';
 import StatusIcon from 'grommet/components/icons/Status';
 import SpinningIcon from 'grommet/components/icons/Spinning';
 
 import ManageHeader from './Header';
 import ManageDeletePost from './ManageDeletePost';
+import ManageCancelChangePost from './ManageCancelChangePost';
 
 import Error from '../Error';
 import Loading from '../Loading';
@@ -48,8 +51,13 @@ export default class Manage extends Component {
     this._onRequestToDeletePost = this._onRequestToDeletePost.bind(this);
     this._onDeletePost = this._onDeletePost.bind(this);
     this._onDeletePostCancel = this._onDeletePostCancel.bind(this);
+    this._onCancelChangeCancel = this._onCancelChangeCancel.bind(this);
     this._onDeleteSucceed = this._onDeleteSucceed.bind(this);
+    this._onCancelChangeSucceed = this._onCancelChangeSucceed.bind(this);
     this._onDeleteFailed = this._onDeleteFailed.bind(this);
+    this._onCancelChangeFailed = this._onCancelChangeFailed.bind(this);
+    this._onCancelChange = this._onCancelChange.bind(this);
+    this._onRequestToCancelChange = this._onRequestToCancelChange.bind(this);
 
     this.state = {
       archive: undefined,
@@ -81,7 +89,9 @@ export default class Manage extends Component {
       archive: archive,
       loading: false,
       deleting: false,
-      post: undefined
+      canceling: false,
+      post: undefined,
+      error: undefined
     });
   }
 
@@ -110,11 +120,20 @@ export default class Manage extends Component {
     this.setState({delete: true, post: post});
   }
 
+  _onRequestToCancelChange (post, event) {
+    event.preventDefault();
+    this.setState({cancelChange: true, post: post});
+  }
+
   _onDeletePostCancel () {
     this.setState({delete: false, post: undefined});
   }
 
-  _onDeleteSucceed (archive) {
+  _onCancelChangeCancel () {
+    this.setState({cancelChange: false, post: undefined});
+  }
+
+  _onDeleteSucceed () {
     store.getArchive('/manage').then(
       this._onArchiveReceived, this._onArchiveFailed
     );
@@ -128,6 +147,30 @@ export default class Manage extends Component {
     });
   }
 
+  _onCancelChange () {
+    this.setState({canceling: true, cancelChange: false});
+    store.cancelChange(this.state.post).then(
+      this._onCancelChangeSucceed, this._onCancelChangeFailed
+    );
+  }
+
+  _onCancelChangeSucceed () {
+    //giving some time for the github api to reflect the changes.
+    setTimeout(() => {
+      store.getArchive('/manage').then(
+        this._onArchiveReceived, this._onArchiveFailed
+      );
+    }, 2000);
+  }
+
+  _onCancelChangeFailed () {
+    this.setState({
+      loading: false,
+      canceling: false,
+      error: 'Could not cancel change. Make sure you have internet connection and try again.'
+    });
+  }
+
   _renderArchive () {
     let monthKeys = Object.keys(this.archive);
     return monthKeys.map((monthLabel, index) => {
@@ -136,6 +179,8 @@ export default class Manage extends Component {
         let formattedDate = fecha.format(
           new Date(post.createdAt), 'MMMM D, YYYY'
         );
+
+        const editIcon = <EditIcon a11yTitle={`Edit ${post.title} post`} />;
 
         let footerNode;
         if (this.state.deleting && this.state.post.id === post.id) {
@@ -150,7 +195,6 @@ export default class Manage extends Component {
             </Box>
           );
         } else {
-          const editIcon = <EditIcon a11yTitle={`Edit ${post.title} post`} />;
           const deleteIcon = <DeleteIcon a11yTitle={`Delete ${post.title} post`} />;
           footerNode = (
             <Box direction="row" responsive={false}>
@@ -163,16 +207,40 @@ export default class Manage extends Component {
         }
 
         let colorIndexProp = 'neutral-1';
+
+        let postChangeActions = (
+          <Box direction="row" responsive={false} justify='end'>
+            <Button plain={true} icon={<CloseIcon />}
+              onClick={this._onRequestToCancelChange.bind(this, post)}
+              a11yTitle={`Cancel ${post.action} ${post.title} post`} />
+          </Box>
+        );
+        if (this.state.canceling && this.state.post.id === post.id) {
+          postChangeActions = (
+            <Box direction="row" responsive={false} justify='end'>
+              <Box justify="center">
+                <SpinningIcon />
+              </Box>
+              <Box pad={{ horizontal: 'small' }}>
+                <span>Canceling...</span>
+              </Box>
+            </Box>
+          );
+        }
+
         if (post.pending) {
-          colorIndexProp = 'disabled';
+          colorIndexProp = 'grey-2';
           footerNode = (
-            <Box pad={{horizontal: 'small'}} direction="row" responsive={false}>
-              <Box justify='center'>
-                <StatusIcon value='warning' />
+            <Box justify='between' full='horizontal'>
+              <Box direction="row" responsive={false}>
+                <Box justify='center'>
+                  <StatusIcon value='warning' />
+                </Box>
+                <Box justify='center'>
+                  <span>{post.action} Pending Approval </span>
+                </Box>
               </Box>
-              <Box justify='center'>
-                <span>Pending Approval</span>
-              </Box>
+              {postChangeActions}
             </Box>
           );
         }
@@ -224,10 +292,6 @@ export default class Manage extends Component {
         <BlogFooter />
       );
       archiveNode = this._renderArchive();
-    } else if (this.state.error) {
-      archiveNode = (
-        <Error message={this.state.error} />
-      );
     } else if (!this.loading) {
       archiveNode = (
         <h3>No posts have been found.</h3>
@@ -239,11 +303,26 @@ export default class Manage extends Component {
       );
     }
 
+    let errorNode;
+    if (this.state.error) {
+      errorNode = (
+        <Error message={this.state.error} />
+      );
+    }
+
     let deleteLayer;
     if (this.state.delete) {
       deleteLayer = (
         <ManageDeletePost post={this.state.post}
           onCancel={this._onDeletePostCancel} onDelete={this._onDeletePost} />
+      );
+    }
+
+    let cancelChangeLayer;
+    if (this.state.cancelChange) {
+      cancelChangeLayer = (
+        <ManageCancelChangePost post={this.state.post}
+          onCancel={this._onCancelChangeCancel} onConfirm={this._onCancelChange} />
       );
     }
 
@@ -253,10 +332,12 @@ export default class Manage extends Component {
         <Section pad={{ horizontal: 'large' }}
           primary={true}>
           <Heading tag="h2" strong={true}>Manage</Heading>
+          {errorNode}
           {archiveNode}
         </Section>
         {footerNode}
         {deleteLayer}
+        {cancelChangeLayer}
       </Article>
     );
   }

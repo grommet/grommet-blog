@@ -112,3 +112,13 @@ export function deletePost (id) {
 export function getAllPosts () {
   return new GithubPostDAO().getAll();
 }
+
+export function cancelChange (post) {
+  const titleId = post.title
+    .replace(/ /g, '-').replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase();
+  const folderDateFormat = fecha.format(
+    new Date(post.createdAt), 'YYYY-MM-DD'
+  );
+  const postFolderName = `${folderDateFormat}__${titleId}`;
+  return new GithubPostDAO(postFolderName).cancelChange(post.action);
+}

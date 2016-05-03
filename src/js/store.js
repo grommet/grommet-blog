@@ -133,6 +133,23 @@ export default {
     });
   },
 
+  cancelChange (post) {
+    return new Promise((resolve, reject) => {
+      const cancelChangeRest = Rest.post(`${appContext}/api/post/cancel`)
+        .field('action', post.action)
+        .field('id', post.id)
+        .field('title', post.title)
+        .field('createdAt', post.createdAt);
+      cancelChangeRest.end((err, res) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res.body);
+        }
+      });
+    });
+  },
+
   deletePost (post) {
     return new Promise((resolve, reject) => {
       Rest.del(`${appContext}/api/post/${post.id}`).end((err, res) => {
