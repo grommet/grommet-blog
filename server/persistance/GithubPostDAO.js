@@ -5,14 +5,34 @@ import fs from 'fs-extra';
 
 //TODO: temporary
 import Git from 'simple-git/src/git';
-Git.prototype.addConfig = function (key, value, then) {
-  return this._run(['config', '--local', key, value], function (err, data) {
-    if (then) {
-      let cb =  this._parseCheckout(data);
-      then(err, !err && cb);
-    }
-  });
+Git.prototype.delete = function (remote, branch, then) {
+  var command = ["push"];
+  if (typeof remote === 'string' && typeof branch === 'string') {
+    command.push(remote, '--delete', branch);
+  }
+  if (typeof arguments[arguments.length - 1] === 'function') {
+    then = arguments[arguments.length - 1];
+  }
+
+  return this._run(command, (err, data) => then && then(err, !err && data));
 };
+
+Git.prototype.fetch = function (remote, branch, then) {
+  var command = ["fetch", "--prune"];
+  if (typeof remote === 'string' && typeof branch === 'string') {
+    command.push(remote, branch);
+  }
+  if (typeof arguments[arguments.length - 1] === 'function') {
+    then = arguments[arguments.length - 1];
+  }
+
+  return this._run(command, (err, data) => then && then(err, !err && this._parseFetch(data)));
+};
+Git.prototype.checkoutLocalBranch = function (branchName, then) {
+  return this._run(['checkout', '-B', branchName],
+    (err, data) => then && then(err, !err && this._parseCheckout(data)));
+};
+
 import ChildProcess from 'child_process';
 import { Buffer } from 'buffer';
 
@@ -60,7 +80,7 @@ export default class GithubPostDAO extends PostDAO {
   constructor (postFolderName, content, metadata, images) {
     super(postFolderName, content, metadata, images);
 
-    this._clone = this._clone.bind(this);
+    this._cloneOrUpdate = this._cloneOrUpdate.bind(this);
     this._createNewBranch = this._createNewBranch.bind(this);
     this._commitAndPushPost = this._commitAndPushPost.bind(this);
     this._createPullRequest = this._createPullRequest.bind(this);
@@ -121,21 +141,33 @@ export default class GithubPostDAO extends PostDAO {
     });
   }
 
-  _clone () {
-    del.sync([ROOT], { force: true });
-    return new Promise((resolve, reject) => {
-      simpleGit().clone(
-        `https://${TOKEN}@github.com/${USER}/${PROJECT_NAME}.git`,
-        ROOT,
-        (err) => {
+  _cloneOrUpdate () {
+    try {
+      fs.accessSync(ROOT, fs.F_OK);
+      return new Promise((resolve, reject) => {
+        simpleGit(ROOT).fetch((err) => {
           if (err) {
             reject(err);
           } else {
             resolve();
           }
-        }
-      );
-    });
+        });
+      });
+    } catch (e) {
+      return new Promise((resolve, reject) => {
+        simpleGit().clone(
+          `https://${TOKEN}@github.com/${USER}/${PROJECT_NAME}.git`,
+          ROOT,
+          (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          }
+        );
+      });
+    }
   }
 
   _loadPostMetadata (post) {
@@ -170,10 +202,12 @@ export default class GithubPostDAO extends PostDAO {
       let promises = [];
 
       pendingPostsPR.forEach((post, index) => {
+        const action = post.action;
         let promise = this._loadPostMetadata(post, resolve, reject);
         promises.push(promise);
         promise.then((post) => {
           post.pending = true;
+          post.action = action;
           posts.push(post);
         }, reject);
       });
@@ -186,7 +220,7 @@ export default class GithubPostDAO extends PostDAO {
 
   add () {
     return new Promise((resolve, reject) => {
-      this._clone()
+      this._cloneOrUpdate()
         .then(this._createNewBranch.bind(this, 'Add'), reject)
         .then(super.add.bind(this, ROOT), reject)
         .then(this._commitAndPushPost.bind(this, 'Add'), reject)
@@ -197,7 +231,7 @@ export default class GithubPostDAO extends PostDAO {
 
   edit () {
     return new Promise((resolve, reject) => {
-      this._clone()
+      this._cloneOrUpdate()
         .then(this._createNewBranch.bind(this, 'Edit'), reject)
         .then(super.edit.bind(this, ROOT), reject)
         .then(this._commitAndPushPost.bind(this, 'Edit'), reject)
@@ -208,7 +242,7 @@ export default class GithubPostDAO extends PostDAO {
 
   delete () {
     return new Promise((resolve, reject) => {
-      this._clone()
+      this._cloneOrUpdate()
         .then(this._createNewBranch.bind(this, 'Delete'), reject)
         .then(super.delete.bind(this, ROOT), reject)
         .then(this._commitAndPushPost.bind(this, 'Delete'), reject)
@@ -241,7 +275,7 @@ export default class GithubPostDAO extends PostDAO {
             );
 
           if (pendingPostsPR && pendingPostsPR.length > 0) {
-            this._clone().then(() => {
+            this._cloneOrUpdate().then(() => {
               this._mapPosts(pendingPostsPR).then(resolve, reject);
             }, reject);
           } else {
@@ -263,6 +297,57 @@ export default class GithubPostDAO extends PostDAO {
           resolve([...posts, ...pending]);
         }, reject);
       }, reject);
+    });
+  }
+
+  cancelChange (action) {
+    return new Promise((resolve, reject) => {
+      github.pullRequests.getAll({
+        ...BASE_GITHUB_CONFIG,
+        state: 'open',
+        'per_page': 100,
+        sort: 'created'
+      }, (err, pullRequests) => {
+        if (err) {
+          reject(err);
+        } else {
+          const title = `${action} post: ${this.postFolderName}`;
+          const hasPR = pullRequests.some((pullRequest) => {
+            if (pullRequest.title === title) {
+              github.pullRequests.update({
+                ...BASE_GITHUB_CONFIG,
+                title: title,
+                head: `${action}_${this.postFolderName}`,
+                state: 'closed',
+                number: pullRequest.number
+              }, (err) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  simpleGit(ROOT)
+                   .addConfig('user.name', USER_NAME)
+                   .addConfig('user.email', USER_EMAIL)
+                   .delete('origin', `${action}_${this.postFolderName}`,
+                     (err) => {
+                       if (err) {
+                         reject(err);
+                       } else {
+                         resolve();
+                       }
+                     }
+                   );
+                }
+              });
+
+              return true;
+            }
+          });
+
+          if (!hasPR) {
+            reject(`Could not find PR: ${title}`);
+          }
+        }
+      });
     });
   }
 }

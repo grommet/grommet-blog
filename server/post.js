@@ -12,7 +12,8 @@ import {
   addPost,
   editPost,
   deletePost,
-  getAllPosts
+  getAllPosts,
+  cancelChange
 } from './utils/post';
 
 const router = Router();
@@ -99,6 +100,26 @@ router.post('/', auth, function (req, res) {
 
 router.put('/', auth, function (req, res) {
   managePost(req, res, editPost);
+});
+
+router.post('/cancel/', auth, function (req, res) {
+  if (process.env.BLOG_PERSISTANCE === 'github') {
+    const metadata = {
+      action: req.body.action,
+      id: req.body.id,
+      title: req.body.title,
+      createdAt: req.body.createdAt
+    };
+
+    cancelChange(metadata).then(
+      res.sendStatus(200),
+      (err) => res.status(500).json({ error: err.toString() })
+    );
+  } else {
+    res.status(500).json({
+      error: 'Cancel change only supported with Github persistance.'
+    });
+  }
 });
 
 router.delete('/*', auth, function (req, res) {
