@@ -38,7 +38,7 @@ export default class ManageAddPost extends Component {
 
   render () {
     return (
-      <PostForm heading="Add Post" submitLabel="Add"
+      <PostForm heading="Add Post" submitLabel="Save"
         error={this.state.error} onSubmit={this._onAddPost}
         busyMessage='Adding' />
     );

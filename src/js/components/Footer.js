@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 
 import Anchor from 'grommet/components/Anchor';
+import Paragraph from 'grommet/components/Paragraph';
 import Box from 'grommet/components/Box';
 import Footer from 'grommet/components/Footer';
 import Menu from 'grommet/components/Menu';
@@ -36,12 +37,12 @@ export default class BlogFooter extends Component {
       <Footer size='small' appCentered={true} colorIndex='light-2'
         direction='column' primary={true} justify='between'
         pad={{horizontal: 'medium', vertical: 'medium', between: 'medium'}}>
-        <Box align='center' justify='center'>
-          <span>This work is licensed under the <a href='http://creativecommons.org/licenses/by/4.0/legalcode' target='_blank'>Creative Commons Attribution 4.0 International License.</a></span>
+        <Box align='center'>
+          <Paragraph>This work is licensed under the <a href='http://creativecommons.org/licenses/by/4.0/legalcode' target='_blank'>Creative Commons Attribution 4.0 International License.</a></Paragraph>
         </Box>
-        <Box align='center' justify='center'>
-          <Menu inline={true} direction='row' size='small'
-            align='start' responsive={false}>
+        <Box align='center'>
+          <Menu inline={true} direction='row' justify='center'
+            size='small' responsive={false}>
             <Anchor href='http://slackin.grommet.io'
               icon={socialSlack} target='_blank' />
             <Anchor href='https://twitter.com/grommetux'

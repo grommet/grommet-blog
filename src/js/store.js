@@ -18,9 +18,13 @@ export default {
     });
   },
 
-  getPost (id) {
+  getPost (id, manage) {
     return new Promise((resolve, reject) => {
-      Rest.get(`${appContext}/api/post/${id}`).end((err, res) => {
+      let manageQuery = '';
+      if (manage) {
+        manageQuery = '?manage=true';
+      }
+      Rest.get(`${appContext}/api/post/${id}${manageQuery}`).end((err, res) => {
         if (err) {
           reject(err);
         } else {

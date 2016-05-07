@@ -1,16 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 import fecha from 'fecha';
 
-import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Button from 'grommet/components/Button';
+import Header from 'grommet/components/Header';
 import Footer from 'grommet/components/Footer';
 import Heading from 'grommet/components/Heading';
 import Label from 'grommet/components/Label';
 import Section from 'grommet/components/Section';
 import Tile from 'grommet/components/Tile';
 import Tiles from 'grommet/components/Tiles';
+import Paragraph from 'grommet/components/Paragraph';
 
 import EditIcon from 'grommet/components/icons/base/Edit';
 import CloseIcon from 'grommet/components/icons/base/Close';
@@ -198,9 +199,9 @@ export default class Manage extends Component {
           const deleteIcon = <DeleteIcon a11yTitle={`Delete ${post.title} post`} />;
           footerNode = (
             <Box direction="row" responsive={false}>
-              <Anchor href={`/manage/post/edit/${post.id}`} icon={editIcon}
+              <Button href={`/manage/post/edit/${post.id}`} icon={editIcon}
                 onClick={this._onEditPost.bind(this, post.id)} />
-              <Anchor href="#" icon={deleteIcon}
+              <Button href="#" icon={deleteIcon}
                 onClick={this._onRequestToDeletePost.bind(this, post)} />
             </Box>
           );
@@ -208,8 +209,17 @@ export default class Manage extends Component {
 
         let colorIndexProp = 'neutral-1';
 
+        let editButton;
+        if (post.action !== 'Delete') {
+          editButton = (
+            <Button href={`/manage/post/edit/${post.id}`} icon={editIcon}
+              onClick={this._onEditPost.bind(this, post.id)} />
+          );
+        }
+
         let postChangeActions = (
           <Box direction="row" responsive={false} justify='end'>
+            {editButton}
             <Button plain={true} icon={<CloseIcon />}
               onClick={this._onRequestToCancelChange.bind(this, post)}
               a11yTitle={`Cancel ${post.action} ${post.title} post`} />
@@ -237,7 +247,7 @@ export default class Manage extends Component {
                   <StatusIcon value='warning' />
                 </Box>
                 <Box justify='center'>
-                  <span>{post.action} Pending Approval </span>
+                  <span>{post.action} post is pending approval </span>
                 </Box>
               </Box>
               {postChangeActions}
@@ -248,15 +258,15 @@ export default class Manage extends Component {
         return (
           <Tile key={`post_${index}`} align='start' pad='small'
             colorIndex={colorIndexProp}>
-            <Box pad='small'>
+            <Header align='start' pad='small'>
               <Heading tag='h4' strong={true}>
                 {post.title}
               </Heading>
-            </Box>
-            <Box pad={{horizontal: 'small'}}>
-              <p>
+            </Header>
+            <Box pad={{horizontal: 'small'}} className='flex'>
+              <Paragraph>
                 Posted {formattedDate} by {post.author}
-              </p>
+              </Paragraph>
             </Box>
             <Footer justify='end' pad='small'>
               {footerNode}

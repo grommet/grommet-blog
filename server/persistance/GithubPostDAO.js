@@ -85,7 +85,7 @@ export default class GithubPostDAO extends PostDAO {
     this._commitAndPushPost = this._commitAndPushPost.bind(this);
     this._createPullRequest = this._createPullRequest.bind(this);
     this._mapPosts = this._mapPosts.bind(this);
-    this._loadPostMetadata = this._loadPostMetadata.bind(this);
+    this._loadPost = this._loadPost.bind(this);
     this.getAll = this.getAll.bind(this);
   }
 
@@ -145,13 +145,9 @@ export default class GithubPostDAO extends PostDAO {
     try {
       fs.accessSync(ROOT, fs.F_OK);
       return new Promise((resolve, reject) => {
-        simpleGit(ROOT).fetch((err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
+        simpleGit(ROOT).checkout('master').pull('origin', 'master').then(
+          resolve, reject
+        );
       });
     } catch (e) {
       return new Promise((resolve, reject) => {
@@ -170,7 +166,7 @@ export default class GithubPostDAO extends PostDAO {
     }
   }
 
-  _loadPostMetadata (post) {
+  _loadPost (post) {
     return new Promise((resolve, reject) => {
       let postBranch = `${post.action}_${post.title}`;
       const postRoot = path.resolve(`/tmp/${postBranch}/${PROJECT_NAME}`);
@@ -179,16 +175,34 @@ export default class GithubPostDAO extends PostDAO {
         if (err) {
           reject(err);
         } else {
+          //if the action is delete the post folder is available in master
           if (post.action === 'Delete') {
             simpleGit(postRoot)
               .then(() => {
-                super.get(postRoot, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
+                const completePost = super.getPost(
+                  postRoot, `server/posts/${post.title}`
+                );
+
+                if (completePost) {
+                  resolve(completePost);
+                } else {
+                  reject('Could not find post');
+                }
               });
-          } else {
+          } else { // if it is edit the content is in a separate branch
             simpleGit(postRoot)
               .checkout(postBranch)
+              .pull('origin', postBranch)
               .then(() => {
-                super.get(postRoot, `server/posts/${post.title}/metadata.json`).then(resolve, reject);
+                const completePost = super.getPost(
+                  postRoot, `server/posts/${post.title}`
+                );
+
+                if (completePost) {
+                  resolve(completePost);
+                } else {
+                  reject('Could not find post');
+                }
               });
           }
         }
@@ -203,7 +217,7 @@ export default class GithubPostDAO extends PostDAO {
 
       pendingPostsPR.forEach((post, index) => {
         const action = post.action;
-        let promise = this._loadPostMetadata(post, resolve, reject);
+        let promise = this._loadPost(post);
         promises.push(promise);
         promise.then((post) => {
           post.pending = true;
@@ -231,12 +245,27 @@ export default class GithubPostDAO extends PostDAO {
 
   edit () {
     return new Promise((resolve, reject) => {
-      this._cloneOrUpdate()
-        .then(this._createNewBranch.bind(this, 'Edit'), reject)
-        .then(super.edit.bind(this, ROOT), reject)
-        .then(this._commitAndPushPost.bind(this, 'Edit'), reject)
-        .then(this._createPullRequest.bind(this, 'Edit'), reject)
-        .then(resolve, reject);
+      this.getPending().then((post) => {
+        if (post && post.action !== 'Delete') {
+          this._cloneOrUpdate()
+            .then(this._createNewBranch.bind(this, post.action), reject)
+            .then(() => {
+              return simpleGit(ROOT).pull(
+                'origin', `${post.action}_${this.postFolderName}`
+              );
+            }, reject)
+            .then(super.edit.bind(this, ROOT), reject)
+            .then(this._commitAndPushPost.bind(this, post.action), reject)
+            .then(resolve, reject);
+        } else {
+          this._cloneOrUpdate()
+            .then(this._createNewBranch.bind(this, 'Edit'), reject)
+            .then(super.edit.bind(this, ROOT), reject)
+            .then(this._commitAndPushPost.bind(this, 'Edit'), reject)
+            .then(this._createPullRequest.bind(this, 'Edit'), reject)
+            .then(resolve, reject);
+        }
+      }, reject);
     });
   }
 
@@ -251,7 +280,7 @@ export default class GithubPostDAO extends PostDAO {
     });
   }
 
-  getPending () {
+  getPendingAll () {
     return new Promise((resolve, reject) => {
       github.pullRequests.getAll({
         ...BASE_GITHUB_CONFIG,
@@ -288,7 +317,7 @@ export default class GithubPostDAO extends PostDAO {
 
   getAll () {
     return new Promise((resolve, reject) => {
-      this.getPending().then((pending) => {
+      this.getPendingAll().then((pending) => {
         super.getAll().then((posts) => {
           let pendingTitles = pending.map((post) => post.title);
           posts = posts.filter(
@@ -297,6 +326,51 @@ export default class GithubPostDAO extends PostDAO {
           resolve([...posts, ...pending]);
         }, reject);
       }, reject);
+    });
+  }
+
+  getPending () {
+    return new Promise((resolve, reject) => {
+      github.pullRequests.getAll({
+        ...BASE_GITHUB_CONFIG,
+        'state': 'open',
+        'per_page': 100,
+        sort: 'created'
+      }, (err, openPullRequests) => {
+        if (err) {
+          reject(err);
+        } else {
+          let pendingPostPR;
+          openPullRequests
+            .some(
+              (pullRequest) => {
+                const foundPost = (
+                  pullRequest.title.indexOf(this.postFolderName) !== -1
+                );
+                if (foundPost) {
+                  pendingPostPR = pullRequest;
+                }
+                return foundPost;
+              }
+            );
+
+          if (pendingPostPR) {
+            const titleRegex = /(Add|Edit|Delete) post: (.*)$/;
+            pendingPostPR = {
+              action: titleRegex.exec(pendingPostPR.title)[1],
+              title: titleRegex.exec(pendingPostPR.title)[2]
+            };
+            this._cloneOrUpdate().then(() => {
+              this._loadPost(pendingPostPR).then((post) => {
+                post.action = pendingPostPR.action;
+                resolve(post);
+              }, reject);
+            }, reject);
+          } else {
+            resolve(undefined);
+          }
+        }
+      });
     });
   }
 
@@ -348,6 +422,27 @@ export default class GithubPostDAO extends PostDAO {
           }
         }
       });
+    });
+  }
+
+  getImageAsBase64 (imageName) {
+    return new Promise((resolve, reject) => {
+      this.getPending().then((post) => {
+        let postBranch = `${post.action}_${this.postFolderName}`;
+        const postRoot = `/tmp/${postBranch}/${PROJECT_NAME}`;
+
+        const imagePath = path.join(
+          postRoot, `server/posts/${this.postFolderName}/images/${imageName}`
+        );
+
+        fs.readFile(imagePath, (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(new Buffer(data, 'base64'));
+          }
+        });
+      }, reject);
     });
   }
 }

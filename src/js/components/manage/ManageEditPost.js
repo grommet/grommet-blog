@@ -19,7 +19,7 @@ export default class ManageEditPost extends Component {
   */
   static fetchData (location, params, appContext) {
     store.addContext(appContext);
-    return store.getPost(params.splat);
+    return store.getPost(params.splat, true);
   }
 
   constructor () {
@@ -38,7 +38,7 @@ export default class ManageEditPost extends Component {
   }
 
   componentDidMount () {
-    store.getPost(this.props.params.splat).then(
+    store.getPost(this.props.params.splat, true).then(
       this._onGetPostSucceed, this._onGetPostFailed
     );
   }
@@ -83,7 +83,7 @@ export default class ManageEditPost extends Component {
     let editPostNode;
     if (this.post) {
       editPostNode = (
-        <PostForm heading="Edit Post" submitLabel="OK"
+        <PostForm heading="Edit Post" submitLabel="Save"
           error={this.state.error} onSubmit={this._onEditPost}
           post={this.state.post} busyMessage='Updating' />
       );

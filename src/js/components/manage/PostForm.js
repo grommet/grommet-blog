@@ -289,7 +289,7 @@ export default class PostForm extends Component {
 
     return (
       <fieldset>
-        <Header size="small" justify="between">
+        <Header size="small" justify="between" separator='bottom'>
           <h3>Images</h3>
           <Button icon={<AddIcon />} onClick={this._onRequestToAddImage}
             a11yTitle='Add Image' />

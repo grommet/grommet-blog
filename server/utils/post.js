@@ -94,12 +94,15 @@ export function editPost (content, metadata, images) {
   }
 }
 
-export function deletePost (id) {
+function getPostFolderName (id) {
   const idGroup = id.split('/');
   const postTitle = idGroup[idGroup.length - 1];
   idGroup.pop();
   const postDate = idGroup.join('-');
-  const postFolderName = `${postDate}__${postTitle}`;
+  return `${postDate}__${postTitle}`;
+}
+export function deletePost (id) {
+  const postFolderName = getPostFolderName(id);
   if (process.env.BLOG_PERSISTANCE === 'github') {
     return new GithubPostDAO(postFolderName).delete();
   } else {
@@ -121,4 +124,17 @@ export function cancelChange (post) {
   );
   const postFolderName = `${folderDateFormat}__${titleId}`;
   return new GithubPostDAO(postFolderName).cancelChange(post.action);
+}
+
+export function getPendingPost (id) {
+  const postFolderName = getPostFolderName(id);
+  return new GithubPostDAO(postFolderName).getPending();
+}
+
+export function getImageAsBase64 (imagePath) {
+  const postPath = imagePath.split('server/posts/')[1];
+  const postFolderGroup = postPath.split('/images/');
+  const postFolderName = postFolderGroup[0];
+  const imageName = decodeURI(postFolderGroup[1]);
+  return new GithubPostDAO(postFolderName).getImageAsBase64(imageName);
 }
