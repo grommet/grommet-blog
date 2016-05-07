@@ -1,6 +1,7 @@
 // (C) Copyright 2014-2015 Hewlett Packard Enterprise Development LP
 
 import React, { PropTypes } from 'react';
+import Paragraph from 'grommet/components/Paragraph';
 import LayerForm from 'grommet-templates/components/LayerForm';
 
 const ManageCancelChangePost = (props) => {
@@ -9,8 +10,9 @@ const ManageCancelChangePost = (props) => {
     <LayerForm title="Cancel Change" submitLabel="Yes, cancel"
       compact={true} onClose={onCancel} onSubmit={onConfirm}>
       <fieldset>
-        <p>Are you sure you want to
-          cancel {post.action} <strong>{post.title}</strong> post?</p>
+        <Paragraph>Are you sure you want to
+          cancel {post.action} <strong>{post.title}</strong> post?
+        </Paragraph>
       </fieldset>
     </LayerForm>
   );

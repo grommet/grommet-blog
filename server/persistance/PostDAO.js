@@ -271,54 +271,63 @@ export default class PostDAO {
     });
   }
 
+  getPost (root, postFolder) {
+    const postRoot = path.join(root, postFolder);
+    if (fs.lstatSync(postRoot).isDirectory()) {
+      const imagePrefix = postFolder.startsWith('server/posts') ?
+        '/api/post/img/' : '/api/post/img/server/posts/';
+
+      const metadataFilename = path.join(postRoot, 'metadata.json');
+      const contentFilename = path.join(postRoot, 'content.md');
+
+      const metadata = JSON.parse(fs.readFileSync(metadataFilename, 'utf8'));
+      let content = fs.readFileSync(contentFilename, 'utf8');
+      const replaceValue = `![$1](${imagePrefix}${postFolder}/images/$2)`;
+      content = content.replace(/!\[(.*?)\]\((?!http)(.*?)\)/g, replaceValue);
+
+      metadata.tags = metadata.tags.join(', ').trim();
+      metadata.imagePath = `${imagePrefix}${postFolder}/images`;
+
+      let coverImagePath;
+      if (metadata.coverImage) {
+        let imagePath = encodeURIComponent(metadata.coverImage);
+        coverImagePath = (
+          `${imagePrefix}${postFolder}/images/${imagePath}`
+        );
+      }
+
+      let imageFolder = path.join(postRoot, 'images');
+      let images = [];
+      if (fs.existsSync(imageFolder)) {
+        fs.readdirSync(imageFolder).forEach((image, index) => {
+          images.push({
+            id: index,
+            name: image,
+            cover: image === metadata.coverImage,
+            url: (
+              `${imagePrefix}${postFolder}/images/${image}`
+            )
+          });
+        });
+      }
+
+      return {
+        ...metadata,
+        coverImage: coverImagePath,
+        content: content,
+        images: images
+      };
+    }
+  }
+
   getAll () {
     const root = path.resolve(__dirname, '../posts');
     return new Promise((resolve, reject) => {
       let posts = [];
       fs.readdirSync(root).forEach((postFolder) => {
-        const postRoot = path.join(root, postFolder);
-        if (fs.lstatSync(postRoot).isDirectory()) {
-          const metadataFilename = path.join(postRoot, 'metadata.json');
-          const contentFilename = path.join(postRoot, 'content.md');
-
-          const metadata = JSON.parse(fs.readFileSync(metadataFilename, 'utf8'));
-          let content = fs.readFileSync(contentFilename, 'utf8');
-          const replaceValue = `![$1](/api/post/img/${postFolder}/images/$2)`;
-          content = content.replace(/!\[(.*?)\]\((?!http)(.*?)\)/g, replaceValue);
-
-          metadata.tags = metadata.tags.join(', ').trim();
-          metadata.imagePath = `/api/post/img/${postFolder}/images`;
-
-          let coverImagePath;
-          if (metadata.coverImage) {
-            let imagePath = encodeURIComponent(metadata.coverImage);
-            coverImagePath = (
-              `/api/post/img/${postFolder}/images/${imagePath}`
-            );
-          }
-
-          let imageFolder = path.join(postRoot, 'images');
-          let images = [];
-          if (fs.existsSync(imageFolder)) {
-            fs.readdirSync(imageFolder).forEach((image, index) => {
-              images.push({
-                id: index,
-                name: image,
-                cover: image === metadata.coverImage,
-                url: (
-                  `/api/post/img/${postFolder}/images/${image}`
-                )
-              });
-            });
-          }
-
-          posts.push({
-            ...metadata,
-            coverImage: coverImagePath,
-            content: content,
-            images: images
-          });
-
+        const post = this.getPost(root, postFolder);
+        if (post) {
+          posts.push(post);
         }
       });
 

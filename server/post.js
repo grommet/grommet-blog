@@ -1,9 +1,11 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development LP
 
-import express, { Router } from 'express';
+import { Router } from 'express';
 import basicAuth from 'basic-auth-connect';
-import fecha from 'fecha';
 import path from 'path';
+import mime from 'mime-types';
+import fs from 'fs';
+import fecha from 'fecha';
 import {
   loadPosts,
   postsMonthMap,
@@ -13,7 +15,9 @@ import {
   editPost,
   deletePost,
   getAllPosts,
-  cancelChange
+  cancelChange,
+  getPendingPost,
+  getImageAsBase64
 } from './utils/post';
 
 const router = Router();
@@ -224,17 +228,52 @@ router.get('/archive/:year/:month/:day', function (req, res) {
   res.send(monthPosts);
 });
 
-router.use('/img/', express.static(path.resolve(__dirname, 'posts')));
+router.get('/img/*', function (req, res) {
+  const imagePath = path.resolve(req.url.split('/img/')[1]);
 
-router.get('/*', function (req, res) {
+  if (!fs.existsSync(imagePath) && process.env.BLOG_PERSISTANCE === 'github') {
+    //if the image does not exist, it is inside a pull request
+    getImageAsBase64(imagePath).then(
+      (img) => {
+        res.writeHead(200, {
+          'Content-Type': mime.lookup(imagePath),
+          'Content-Length': img.length
+        });
+        res.end(img);
+      },
+      (err) => res.status(500).json({ error: err.toString() }));
+  } else {
+    res.sendFile(imagePath);
+  }
+});
+
+router.get(/\d{4}/, function (req, res) {
   let matchingPost;
-  posts.some((post) => {
-    if (post.id === req.params['0']) {
-      matchingPost = post;
-      return true;
-    }
-  });
-  res.send(matchingPost);
+  const postId = req.url.substring(1).split('?')[0];
+  if (process.env.BLOG_PERSISTANCE === 'github' && req.query.manage) {
+    getPendingPost(postId).then((pendingPost) => {
+      if (pendingPost) {
+        res.send(pendingPost);
+      } else {
+        posts.some((post) => {
+          if (post.id === postId) {
+            matchingPost = post;
+            return true;
+          }
+        });
+
+        res.send(matchingPost);
+      }
+    }, (err) => res.status(500).json({ error: err.toString() }));
+  } else {
+    posts.some((post) => {
+      if (post.id === postId) {
+        matchingPost = post;
+        return true;
+      }
+    });
+    res.send(matchingPost);
+  }
 });
 
 export default router;

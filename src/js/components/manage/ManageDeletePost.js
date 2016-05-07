@@ -1,6 +1,7 @@
 // (C) Copyright 2014-2015 Hewlett Packard Enterprise Development LP
 
 import React, { PropTypes } from 'react';
+import Paragraph from 'grommet/components/Paragraph';
 import LayerForm from 'grommet-templates/components/LayerForm';
 
 const ManageDeletePost = (props) => {
@@ -9,8 +10,8 @@ const ManageDeletePost = (props) => {
     <LayerForm title="Remove" submitLabel="Yes, remove"
       compact={true} onClose={onCancel} onSubmit={onDelete}>
       <fieldset>
-        <p>Are you sure you want to
-          remove <strong>{post.title}</strong> post?</p>
+        <Paragraph>Are you sure you want to
+          remove <strong>{post.title}</strong> post?</Paragraph>
       </fieldset>
     </LayerForm>
   );
