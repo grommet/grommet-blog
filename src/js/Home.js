@@ -105,8 +105,10 @@ export default class Home extends Component {
           <Link to={`/post/${post.id}`} key={`post_${index}`}
             className='post-link'>
             <HomeSection colorIndex="dark" {...backgroundOptions}>
-              <Heading><strong>{post.title}</strong></Heading>
-              <h2>{`Posted ${formattedDate} by ${post.author}`}</h2>
+              <Heading align='center' strong={true}>{post.title}</Heading>
+              <Heading align='center' tag='h2'>
+                {`Posted ${formattedDate} by ${post.author}`}
+              </Heading>
             </HomeSection>
           </Link>
         );

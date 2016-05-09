@@ -8,4 +8,4 @@ Grommet's design is highly modular, allowing developers to use just the parts of
 
 We feel we've created something special and to back that up, all Hewlett Packard Enterprise software will ship with UIs based on Grommet. We encourage everyone who uses the Grommet open source code – either inside HP or out – to help expand and improve the framework.
 
-Ready to give Grommet a go? Head on over to our "[Hello World](/archive)" guide give it a try using the handy codepen template. For any questions about Grommet as you start tinkering, ping us on our Slack channel at [slackin.grommet.io](http://slackin.grommet.io).
+Ready to give Grommet a go? Head on over to our "[Hello World](http://www.grommet.io/docs/develop/hello-world)" guide give it a try using the handy codepen template. For any questions about Grommet as you start tinkering, ping us on our Slack channel at [slackin.grommet.io](http://slackin.grommet.io).

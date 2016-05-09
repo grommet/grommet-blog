@@ -84,7 +84,7 @@ function _renderPostHeader (post, preview) {
   return (
     <Box pad='large' colorIndex='neutral-2' {...backgroundOptions}
       align='center' justify='center'>
-      <Heading strong={true}>
+      <Heading align='center' strong={true}>
         {post.title || 'POST_TITLE'}
       </Heading>
       {secondaryHeader}
