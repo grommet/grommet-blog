@@ -45,6 +45,15 @@ app.use(busboyBodyParser());
 function routerProcessor (req, res, next) {
   if (/\..*$/.test(req.url)) {
     next();
+  } else if (/^\/\d{4}\/\d{2}\/\d{2}\/.*/.test(req.url)) {
+    // necessary for the old posts not following our regex structure
+    const url = req.url
+      .replace('e-a-t', 'eat')
+      .replace(
+        'great-grommet-podcast-episode-1',
+        'welcome-to-the-first-ever-great-grommet-podcast'
+      );
+    res.redirect(302, `/../post${url}`);
   } else {
     //comment entire match block for single page app
     match({ routes, location: req.url }, (error, redirectLocation, renderProps) => {
