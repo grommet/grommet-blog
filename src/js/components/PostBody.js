@@ -53,7 +53,7 @@ function _renderPostHeader (post, preview) {
   );
 
   let target = (
-    `http://blog.grommet.io/${post.id || ''}`
+    `http://blog.grommet.io/post/${post.id || ''}`
   );
 
   let backgroundOptions = {};
@@ -133,7 +133,7 @@ function _updateNodes (post, preview) {
 
   if (window.addthis && !preview) {
     let target = (
-      `http://blog.grommet.io/${post.id}`
+      `http://blog.grommet.io/post/${post.id}`
     );
     if (window.addthis_share) {
       window.addthis_share.url = target;
