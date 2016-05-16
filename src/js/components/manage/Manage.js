@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import fecha from 'fecha';
 
+import Anchor from 'grommet/components/Anchor';
 import Article from 'grommet/components/Article';
 import Box from 'grommet/components/Box';
 import Button from 'grommet/components/Button';
@@ -59,6 +60,7 @@ export default class Manage extends Component {
     this._onCancelChangeFailed = this._onCancelChangeFailed.bind(this);
     this._onCancelChange = this._onCancelChange.bind(this);
     this._onRequestToCancelChange = this._onRequestToCancelChange.bind(this);
+    this._onRequestForPost = this._onRequestForPost.bind(this);
 
     this.state = {
       archive: undefined,
@@ -102,6 +104,11 @@ export default class Manage extends Component {
       loading: false,
       error: 'Could not load posts. Make sure you have internet connection and try again.'
     });
+  }
+
+  _onRequestForPost (event) {
+    event.preventDefault();
+    history.push(event.currentTarget.getAttribute('href'));
   }
 
   _onEditPost (postId, event) {
@@ -238,6 +245,11 @@ export default class Manage extends Component {
           );
         }
 
+        let headerNode = (
+          <Heading tag='h4' strong={true}>
+            {post.title}
+          </Heading>
+        );
         if (post.pending) {
           colorIndexProp = 'grey-2';
           footerNode = (
@@ -253,15 +265,19 @@ export default class Manage extends Component {
               {postChangeActions}
             </Box>
           );
+        } else {
+          headerNode = (
+            <Anchor href={`/post/${post.id}`} onClick={this._onRequestForPost}>
+              {headerNode}
+            </Anchor>
+          );
         }
 
         return (
           <Tile key={`post_${index}`} align='start' pad='small'
             colorIndex={colorIndexProp}>
             <Header align='start' pad='small'>
-              <Heading tag='h4' strong={true}>
-                {post.title}
-              </Heading>
+              {headerNode}
             </Header>
             <Box pad={{horizontal: 'small'}} className='flex'>
               <Paragraph>
