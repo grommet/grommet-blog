@@ -49,6 +49,7 @@ function routerProcessor (req, res, next) {
     // necessary for the old posts not following our regex structure
     const url = req.url
       .replace('e-a-t', 'eat')
+      .replace('0-6-2', '062')
       .replace(
         'great-grommet-podcast-episode-1',
         'welcome-to-the-first-ever-great-grommet-podcast'

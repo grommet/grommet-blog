@@ -18,10 +18,10 @@ Here’s an overview of the topics discussed in this episode:
 * **24:00** — Recommending blogs that talk about accessibility
 * **24:50** — Predicting where accessibility will be in 5 to 10 years
 
-A full list of links mentioned in the podcast, including Twitter handles, accessibility meetups, event opportunities and apps, is located on [the SoundCloud page] (https://soundcloud.com/grommetux/episode-4-interview-with-digital-accessibility-pro-jennison-asuncion).
+A full list of links mentioned in the podcast, including Twitter handles, accessibility meetups, event opportunities and apps, is located on [the SoundCloud page](https://soundcloud.com/grommetux/episode-4-interview-with-digital-accessibility-pro-jennison-asuncion).
 
 We’d like to thank Jennison for joining us and hope you’ve enjoyed this newest podcast.
 
 As always, be sure to leave us feedback and suggestions on what else you’d like to hear about in the comments below.
 
-Special thanks to [@sogami] (https://twitter.com/sogami) for the podcast intro and [Bensound.com] (http://www.bensound.com/) for the music.
+Special thanks to [@sogami](https://twitter.com/sogami) for the podcast intro and [Bensound.com](http://www.bensound.com/) for the music.
