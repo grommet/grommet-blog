@@ -10,6 +10,6 @@ Here’s an overview of the topics discussed in this episode:
 * **10:00** — Overview of the creation of the Hyper Converged 380 System from Hewlett Packard Enterprise
 * **14:00** — Blogging with Grommet
 
-We have a lot of exciting stuff coming down the pipeline from Grommet so stay tuned for upcoming episodes! As always, any feedback on what you like and what you’d like to hear more about is greatly appreciated. We love your suggestions! Lastly, make sure to [rate and review the Great Grommet Podcast on iTunes] (https://itunes.apple.com/us/podcast/great-grommet-podcast/id1089989263).
+We have a lot of exciting stuff coming down the pipeline from Grommet so stay tuned for upcoming episodes! As always, any feedback on what you like and what you’d like to hear more about is greatly appreciated. We love your suggestions! Lastly, make sure to [rate and review the Great Grommet Podcast on iTunes](https://itunes.apple.com/us/podcast/great-grommet-podcast/id1089989263).
 
 A special thanks to Grommet contributor Jackie for doing the intro and to bensound.com for the music.
