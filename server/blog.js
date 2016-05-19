@@ -28,6 +28,7 @@ let styles = sass.renderSync({
 }).css;
 
 const PORT = process.env.PORT || 8070;
+const SKIP_SSL = process.env.SKIP_SSL || false;
 
 const USER = process.env.GH_USER || 'grommet';
 const USER_PASSWORD = process.env.USER_PASSWORD || 'admin';
@@ -35,6 +36,14 @@ const USER_PASSWORD = process.env.USER_PASSWORD || 'admin';
 const auth = basicAuth(USER, USER_PASSWORD);
 
 const app = express();
+function requireHTTPS(req, res, next) {
+  if (!req.secure && !SKIP_SSL) {
+    return res.redirect('https://' + req.get('host') + req.url);
+  }
+  next();
+}
+
+app.use(requireHTTPS);
 app.set('views', path.resolve(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(compression());
