@@ -43,9 +43,7 @@ app.use(bodyParser.json());
 app.use(busboyBodyParser());
 
 function routerProcessor (req, res, next) {
-  if (!req.secure) {
-    res.redirect(302, 'https://' + req.get('host') + req.url);
-  } else if (/\..*$/.test(req.url)) {
+  if (/\..*$/.test(req.url)) {
     next();
   } else if (/^\/\d{4}\/\d{2}\/\d{2}\/.*/.test(req.url)) {
     // necessary for the old posts not following our regex structure
