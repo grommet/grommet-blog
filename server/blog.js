@@ -28,7 +28,6 @@ let styles = sass.renderSync({
 }).css;
 
 const PORT = process.env.PORT || 8070;
-const SKIP_SSL = process.env.SKIP_SSL || false;
 
 const USER = process.env.GH_USER || 'grommet';
 const USER_PASSWORD = process.env.USER_PASSWORD || 'admin';
@@ -44,7 +43,7 @@ app.use(bodyParser.json());
 app.use(busboyBodyParser());
 
 function routerProcessor (req, res, next) {
-  if (!req.secure && !SKIP_SSL) {
+  if (!req.secure) {
     res.redirect(302, 'https://' + req.get('host') + req.url);
   } else if (/\..*$/.test(req.url)) {
     next();
