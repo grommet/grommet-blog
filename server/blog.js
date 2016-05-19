@@ -35,7 +35,6 @@ const USER_PASSWORD = process.env.USER_PASSWORD || 'admin';
 const auth = basicAuth(USER, USER_PASSWORD);
 
 const app = express();
-app.configure('production', function () {
     app.use (function (req, res, next) {
       var schema = (req.headers['x-forwarded-proto'] || '').toLowerCase();
       if (schema === 'https') {
@@ -44,7 +43,6 @@ app.configure('production', function () {
         res.redirect('https://' + req.headers.host + req.url);
       }
     });
-  });
 app.set('views', path.resolve(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(compression());
