@@ -170,7 +170,7 @@ function routerProcessor (req, res, next) {
 app.get('/manage/*', auth);
 app.use('/api/post', post);
 app.use('/', routerProcessor);
-app.use('/', express.static(path.join(__dirname, '/../dist')));
+app.use('/', express.static(path.join(__dirname, '/../dist', { redirect : false })));
 app.get('/*', routerProcessor);
 
 const server = http.createServer(app);
