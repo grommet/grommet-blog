@@ -1,4 +1,4 @@
-In our last podcast we spoke with admitted Canadian and accessibility guru extraordinaire Jennison Asuncion who leads the accessibility efforts at LinkedIn. The whole conversation was really insightful, and if you haven't given it a listen yet, I strongly encourage you to do so. 
+In our [recent podcast](http://blog.grommet.io/post/2016/04/18/the-great-grommet-podcast-episode-four-an-interview-with-digital-accessibility-pro-jennison-asuncion) we spoke with admitted Canadian and accessibility guru extraordinaire Jennison Asuncion who leads the accessibility efforts at LinkedIn. The whole conversation was really insightful, and if you haven't given it a listen yet, I strongly encourage you to do so. 
 
 I've pulled out three quotes with pointers from Jennison that he urges everyone to keep in mind when looking to make their websites and apps more accessible:
 
