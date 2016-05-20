@@ -33,4 +33,4 @@ Some screen readers are better than others to test with. Certainly, in a Mac, yo
 I think if we don't get more developers and designers thinking about accessibility, we do run the risk of creating a much more...you know how we used to have physical barriers? I have a feeling, if we don't all work together, we're going to have more digital barriers. For Folks like myself, it's going to be a lot more difficult."
 
 
-Please help spread the word about digital accessibility by sharing this blog post on Twitter. 
+Please help spread the word about digital accessibility by [sharing this blog post on Twitter](http://ctt.ec/662GV). 
