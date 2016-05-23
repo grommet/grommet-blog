@@ -31,12 +31,24 @@ const PORT = process.env.PORT || 8070;
 
 const USER = process.env.GH_USER || 'grommet';
 const USER_PASSWORD = process.env.USER_PASSWORD || 'admin';
+const ENV = process.env.NODE_ENV || 'development';
 
 const auth = basicAuth(USER, USER_PASSWORD);
 
 const app = express();
 app.set('views', path.resolve(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+const forceSsl = function (req, res, next) {
+  if (req.headers['x-forwarded-proto'] !== 'https') {
+    return res.redirect(`https://${req.get('Host')}${req.url}`);
+  }
+  return next();
+};
+
+if (ENV === 'production') {
+  app.use(forceSsl);
+}
 app.use(compression());
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
