@@ -78,16 +78,6 @@ function routerProcessor (req, res, next) {
             components[components.length - 1]
           );
 
-          if (component.fetchData) {
-            return (
-              component.fetchData(
-                renderProps.location,
-                renderProps.params,
-                `https://localhost:${PORT}`
-              )
-            );
-          }
-
           return Promise.resolve();
         }
 
