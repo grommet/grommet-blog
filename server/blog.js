@@ -39,16 +39,6 @@ const app = express();
 app.set('views', path.resolve(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-const forceSsl = function (req, res, next) {
-  if (req.headers['x-forwarded-proto'] !== 'https') {
-    return res.redirect(`https://${req.get('Host')}${req.url}`);
-  }
-  return next();
-};
-
-if (ENV === 'production') {
-  app.use(forceSsl);
-}
 app.use(compression());
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
@@ -177,6 +167,19 @@ app.use('/', express.static(path.join(__dirname, '/../dist')));
 app.get('/*', routerProcessor);
 
 const server = http.createServer(app);
+
+const forceSsl = function (req, res, next) {
+  console.log('##', req.headers['x-forwarded-proto']);
+  if (req.headers['x-forwarded-proto'] !== 'https') {
+    return res.redirect(`https://${req.get('Host')}${req.url}`);
+  }
+  return next();
+};
+
+if (ENV === 'production') {
+  server.use(forceSsl);
+}
+
 server.listen(PORT);
 
 console.log('Server started, listening at: http://localhost:8070...');
