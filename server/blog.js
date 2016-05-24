@@ -3,6 +3,7 @@
 import basicAuth from 'basic-auth-connect';
 import compression from 'compression';
 import express from 'express';
+import enforce from 'express-sslify';
 import http from 'http';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
@@ -39,6 +40,9 @@ const app = express();
 app.set('views', path.resolve(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+if (ENV === 'production') {
+  app.use(enforce.HTTPS({ trustProtoHeader: true }));
+}
 app.use(compression());
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
@@ -167,16 +171,6 @@ app.use('/', express.static(path.join(__dirname, '/../dist')));
 app.get('/*', routerProcessor);
 
 const server = http.createServer(app);
-
-if (ENV === 'production') {
-  server.get('*', function(req,res) {  
-    console.log('##', req.headers['x-forwarded-proto']);
-    if (req.headers['x-forwarded-proto'] !== 'https') {
-      return res.redirect(`https://${req.get('Host')}${req.url}`);
-    }
-  });
-}
-
 server.listen(PORT);
 
 console.log('Server started, listening at: http://localhost:8070...');
