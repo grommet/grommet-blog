@@ -168,16 +168,13 @@ app.get('/*', routerProcessor);
 
 const server = http.createServer(app);
 
-const forceSsl = function (req, res, next) {
-  console.log('##', req.headers['x-forwarded-proto']);
-  if (req.headers['x-forwarded-proto'] !== 'https') {
-    return res.redirect(`https://${req.get('Host')}${req.url}`);
-  }
-  return next();
-};
-
 if (ENV === 'production') {
-  server.use(forceSsl);
+  server.get('*', function(req,res) {  
+    console.log('##', req.headers['x-forwarded-proto']);
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(`https://${req.get('Host')}${req.url}`);
+    }
+  });
 }
 
 server.listen(PORT);
