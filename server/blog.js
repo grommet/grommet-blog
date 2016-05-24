@@ -3,6 +3,7 @@
 import basicAuth from 'basic-auth-connect';
 import compression from 'compression';
 import express from 'express';
+import enforce from 'express-sslify';
 import http from 'http';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
@@ -39,15 +40,8 @@ const app = express();
 app.set('views', path.resolve(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-const forceSsl = function (req, res, next) {
-  if (req.headers['x-forwarded-proto'] !== 'https') {
-    return res.redirect(`https://${req.get('Host')}${req.url}`);
-  }
-  return next();
-};
-
 if (ENV === 'production') {
-  app.use(forceSsl);
+  app.use(enforce.HTTPS({ trustProtoHeader: true }));
 }
 app.use(compression());
 app.use(morgan('tiny'));
