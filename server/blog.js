@@ -3,7 +3,7 @@
 import basicAuth from 'basic-auth-connect';
 import compression from 'compression';
 import express from 'express';
-import enforce from 'express-sslify';
+// import enforce from 'express-sslify';
 import http from 'http';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
@@ -32,7 +32,7 @@ const PORT = process.env.PORT || 8070;
 
 const USER = process.env.GH_USER || 'grommet';
 const USER_PASSWORD = process.env.USER_PASSWORD || 'admin';
-const ENV = process.env.NODE_ENV || 'development';
+// const ENV = process.env.NODE_ENV || 'development';
 
 const auth = basicAuth(USER, USER_PASSWORD);
 
@@ -40,9 +40,9 @@ const app = express();
 app.set('views', path.resolve(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-if (ENV === 'production') {
-  app.use(enforce.HTTPS({ trustProtoHeader: true }));
-}
+// if (ENV === 'production') {
+//   app.use(enforce.HTTPS({ trustProtoHeader: true }));
+// }
 app.use(compression());
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
