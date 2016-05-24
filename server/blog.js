@@ -84,7 +84,7 @@ function routerProcessor (req, res, next) {
               component.fetchData(
                 renderProps.location,
                 renderProps.params,
-                `http://${req.headers.host}`
+                `https://${req.headers.host}`
               )
             );
           }
