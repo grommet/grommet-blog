@@ -84,7 +84,8 @@ function routerProcessor (req, res, next) {
               component.fetchData(
                 renderProps.location,
                 renderProps.params,
-                `https://${req.headers.host}`
+                ENV === production ? "https://blog.grommet.io" :
+                  `localhost:${PORT}`
               )
             );
           }
