@@ -62,11 +62,12 @@ function routerProcessor (req, res, next) {
       );
     res.redirect(302, `/../post${url}`);
   } else {
-    
     //comment entire match block for single page app
     match({ routes, location: req.url }, (error, redirectLocation, renderProps) => {
       if (error) {
         res.status(500).send(error.message);
+      } else if (redirectLocation) {
+        res.redirect(302, redirectLocation.pathname + redirectLocation.search);
       } else if (renderProps) {
 
         function fetchData () {
@@ -77,6 +78,16 @@ function routerProcessor (req, res, next) {
           let component = (
             components[components.length - 1]
           );
+
+          if (component.fetchData) {
+            return (
+              component.fetchData(
+                renderProps.location,
+                renderProps.params,
+                `http://${req.headers.host}`
+              )
+            );
+          }
 
           return Promise.resolve();
         }
@@ -147,6 +158,9 @@ function routerProcessor (req, res, next) {
         res.status(404).send('Not found');
       }
     });
+
+    //for single page app use this instead
+    //res.sendFile(path.resolve(path.join(__dirname, '/../dist/index.html')));
   }
 }
 
