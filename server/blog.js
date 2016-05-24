@@ -83,7 +83,7 @@ function routerProcessor (req, res, next) {
               component.fetchData(
                 renderProps.location,
                 renderProps.params,
-                `localhost:${PORT}`
+                `https://localhost:${PORT}`
               )
             );
           }
