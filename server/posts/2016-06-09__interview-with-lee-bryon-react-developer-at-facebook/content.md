@@ -26,6 +26,6 @@ What's been surprising is just how quickly that perspective changed as many star
 
 We had no idea how popular React would become, and are humbled and thrilled to see React in use on many major websites and now in many major applications via React Native, ComponentKit, and other libraries which share React's architecture.
  
-##Where do you see React a few years from now?
+## Where do you see React a few years from now?
  
 React itself is largely complete and most of it's evolution is in better understanding the underlying operating mechanisms, and generalizing them further. More recently that line of work has allowed React to actually be completely uncoupled from the web browser. You actually need to also include ReactDOM in order to use React in a browser. React can target any kind of retained-mode UI framework including essentially all popular native application UI frameworks including iOS, Android, and Windows. Future work is trying to divorce React from CSS style sheets by providing more functional layout mechanisms (inspired by ComponentKit) and to allow React's operating mechanisms to be more asynchronous to better support environments which support threads (such as iOS and Android) and to ensure that UIs never stutter or freeze, even when doing complex updates.
