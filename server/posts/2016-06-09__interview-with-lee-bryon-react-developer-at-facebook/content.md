@@ -2,11 +2,11 @@ Welcome to React month here at the Grommet blog! In this post we interview Lee B
 
 Lee was kind enough to answer a few questions about React that we sent his way. Take a look at what he had to say below.
 
-##What’s your background with React?
+## What’s your background with React?
  
 I was part of designing and building the early versions of React, and designed the component lifecycle API. I also contributed to the early versions of ComponentKit, a UI library for iOS based largely on the architecture of React. I've continued to be part of the React community, speaking at conferences and meetups about React and continuing to investigate solving problems related to React like immutable data stores and syncing information from servers.
  
-##What do you wish you knew about React before you started using it?
+## What do you wish you knew about React before you started using it?
  
 When I first started using an early version of React, I thought for sure that it would be very slow. Conceptually whenever anything changes, React re-renders the entire view. However what convinced me was getting a better understanding of exactly what it is that React is doing when reconciling a new representation of a view with the old in order to keep the actual UI up to date. It is often described as first creating a new representation of a view and then diffing this with the old representation. In reality, it actually skips straight to computing a diff which allows for some dramatic speed improvements in the common case: nothing changed.
  
@@ -14,11 +14,11 @@ When I first started using an early version of React, I thought for sure that it
  
 I would recommend against using any of the "bootstrap" projects or introducing any other new libraries at the same time. React is often only one part of an application's architecture, and there are a lot of other libraries out there that work nicely with it, like Babel, Redux, hot-loading, and Flow. Often newcomers find a blog post or "bootstrap" project which tries to force way too much of this on them simultaneously. My advice is to first introduce React and nothing more into your tool belt and start building your UI components. Once you have a good understanding of how and why React does what it does, then you can start introducing more tools.
  
-##Do you think React was a good choice for Grommet? Why?
+## Do you think React was a good choice for Grommet? Why?
  
 In essence, Grommet is a library of reusable UI components. Components are often difficult to build in HTML-template-based UI libraries or even traditional MVC libraries because the elements of composition are not granular enough to represent small reusable elements. React's essential building block is the Component, which is exactly what you want for reusable UI elements. React was originally designed for exactly this kind of use and was inspired by XHP - an extension to PHP to allow for Component based static UIs - which defined Facebook's UIs including it's reusable UI elements for many years before React was introduced.
  
-##What has surprised you about the adoption of React?
+## What has surprised you about the adoption of React?
  
 When React was first pitched internally at Facebook, it faced a lot of opposition because of an intuition that it would be slow, and performance is an important topic at Facebook. The project persevered and when it was clear that intuition was misguided, React started to be adopted by many teams at Facebook. When React was initially open sourced in 2012, it faced immediate negative reaction, mostly due to JSX - an optional syntax addition to JavaScript that makes writing component data structures more legible. We figured that React would be relegated to the sidelines in the open source community as most believed that this coupling of business logic and display logic was a bad idea. 
 
