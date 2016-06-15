@@ -14,6 +14,7 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { match, RouterContext } from 'react-router';
 import sass from 'node-sass';
+import timeout from 'connect-timeout';
 
 import routes from '../src/js/routes';
 import BlogContext from '../src/js/BlogContext';
@@ -37,6 +38,7 @@ const ENV = process.env.NODE_ENV || 'development';
 const auth = basicAuth(USER, USER_PASSWORD);
 
 const app = express();
+app.use(timeout(120000));
 app.set('views', path.resolve(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
