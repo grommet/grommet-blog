@@ -6,7 +6,7 @@ Rest.setHeaders({
   'Accept': 'application/json'
 });
 
-Rest.setTimeout(30000); //30s
+Rest.setTimeout(60000); //60s
 
 let appContext = '';
 let useContext = true;
