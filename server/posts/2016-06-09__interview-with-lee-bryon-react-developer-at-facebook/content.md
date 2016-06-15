@@ -1,4 +1,4 @@
-This month we chatted with Lee Byron from Facebook about React and the product infrastructure team he is apart of. In addition, to React he’s worked on open source projects including GraphQL and Immutable.js. He’s also a prolific speaker and you can check out his latest talk from the Render 2016 conference here.
+This month we chatted with Lee Byron from Facebook about React and the product infrastructure team he is apart of. In addition, to React he’s worked on open source projects including GraphQL and Immutable.js. He’s also a prolific speaker and you can check out his latest talk from the [Render 2016 conference here](https://vimeo.com/album/3953264/video/166790294 "Render 2016 conference").
 
 Lee was kind enough to answer a few questions about React that we sent his way. Take a look at what he had to say below.
 
