@@ -1,5 +1,7 @@
 This month we chatted with Lee Byron from Facebook about React and the product infrastructure team he is apart of. In addition, to React he’s worked on open source projects including GraphQL and Immutable.js. He’s also a prolific speaker and you can check out his latest talk from the [Render 2016 conference here](https://vimeo.com/album/3953264/video/166790294 "Render 2016 conference").
 
+![Lee Bryon avatar](leebryon.jpg)
+
 Lee was kind enough to answer a few questions about React that we sent his way. Take a look at what he had to say below.
 
 ## What’s your background with React?
@@ -10,7 +12,7 @@ I was part of designing and building the early versions of React, and designed t
  
 When I first started using an early version of React, I thought for sure that it would be very slow. Conceptually whenever anything changes, React re-renders the entire view. However what convinced me was getting a better understanding of exactly what it is that React is doing when reconciling a new representation of a view with the old in order to keep the actual UI up to date. It is often described as first creating a new representation of a view and then diffing this with the old representation. In reality, it actually skips straight to computing a diff which allows for some dramatic speed improvements in the common case: nothing changed.
  
-##What tips would you give someone who is just now dipping their toes in React?
+## What tips would you give someone who is just now dipping their toes in React?
  
 I would recommend against using any of the "bootstrap" projects or introducing any other new libraries at the same time. React is often only one part of an application's architecture, and there are a lot of other libraries out there that work nicely with it, like Babel, Redux, hot-loading, and Flow. Often newcomers find a blog post or "bootstrap" project which tries to force way too much of this on them simultaneously. My advice is to first introduce React and nothing more into your tool belt and start building your UI components. Once you have a good understanding of how and why React does what it does, then you can start introducing more tools.
  
