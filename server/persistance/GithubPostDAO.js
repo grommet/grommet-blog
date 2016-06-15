@@ -57,7 +57,7 @@ const github = new GitHubApi({
   version: "3.0.0",
   protocol: "https",
   host: "api.github.com",
-  timeout: 5000,
+  timeout: 30000,
   headers: {
     'user-agent': `${PROJECT_NAME}-github-app`
   }
