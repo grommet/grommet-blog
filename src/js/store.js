@@ -2,6 +2,12 @@
 
 import Rest from 'grommet/utils/Rest';
 
+Rest.setHeaders({
+  'Accept': 'application/json'
+});
+
+Rest.setTimeout(30000); //30s
+
 let appContext = '';
 let useContext = true;
 
