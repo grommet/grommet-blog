@@ -32,6 +32,21 @@ Git.prototype.checkoutLocalBranch = function (branchName, then) {
   return this._run(['checkout', '-B', branchName],
     (err, data) => then && then(err, !err && this._parseCheckout(data)));
 };
+Git.prototype.pull = function (remote, branch, then) {
+  var command = ["pull"];
+  if (typeof remote === 'string' && typeof branch === 'string') {
+    command.push(remote, branch);
+  }
+  if (typeof arguments[arguments.length - 1] === 'function') {
+    then = arguments[arguments.length - 1];
+  }
+  if (!remote && !branch) {
+    command.push('--all');
+  }
+
+  return this._run(command,
+    (err, data) => then && then(err, !err && this._parsePull(data)));
+};
 
 import ChildProcess from 'child_process';
 import { Buffer } from 'buffer';
@@ -144,7 +159,7 @@ export default class GithubPostDAO extends PostDAO {
     try {
       fs.accessSync(ROOT, fs.F_OK);
       return new Promise((resolve, reject) => {
-        simpleGit(ROOT).checkout('master').pull('origin', 'master').then(
+        simpleGit(ROOT).checkout('master').pull().then(
           resolve, reject
         );
       });
