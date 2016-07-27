@@ -1,4 +1,7 @@
 // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development Company, L.P.
+import 'whatwg-fetch';
+import { polyfill as promisePolyfill } from 'es6-promise';
+promisePolyfill();
 
 import '../scss/index.scss';
 
