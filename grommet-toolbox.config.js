@@ -1,4 +1,5 @@
 import path from 'path';
+import webpack from 'webpack';
 
 export default {
   copyAssets: [
@@ -28,7 +29,12 @@ export default {
       root: [
         path.resolve(__dirname, './node_modules')
       ]
-    }
+    },
+    plugins: [
+      new webpack.ProvidePlugin({
+        'fetch': 'exports?self.fetch!whatwg-fetch'
+      })
+    ]
   },
   alias: {
     'grommet/scss': path.resolve(__dirname, '../grommet/src/scss'),
