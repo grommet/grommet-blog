@@ -90,7 +90,7 @@ Everything was going well until the point I had to introduce a very important fe
 
 During my research I found PostCSS and it gave me hopes I could make things work again. CSS Modules and PostCSS are actually pretty connected, you can see a lot of PostCSS plugins inside CSS Modules Github [organization](https://github.com/css-modules?utf8=✓&query=postcss).
 
-Well, during my investigation I found a LOT of postcss plugins for handling variables: [postcss-css-variables](https://github.com/MadLittleMods/postcss-css-variables), [postcss-vars](https://www.npmjs.com/package/postcss-vars), [postcss-nested-vars](https://www.npmjs.com/package/postcss-nested-vars), [postcss-simple-vars](https://github.com/postcss/postcss-simple-vars), [postcss-custom-properties](https://github.com/postcss/postcss-custom-properties), and, last but not least [postcss-modules-values](https://github.com/css-modules/postcss-modules-values). I don't know about you, but I was pretty confused with the range of options to choose from. It is even possible to use multiple at the same time (e.g postcss-modules-values and postcss-simple-vars) :confused: 
+Well, during my investigation I found a LOT of postcss plugins for handling variables: [postcss-css-variables](https://github.com/MadLittleMods/postcss-css-variables), [postcss-vars](https://www.npmjs.com/package/postcss-vars), [postcss-nested-vars](https://www.npmjs.com/package/postcss-nested-vars), [postcss-simple-vars](https://github.com/postcss/postcss-simple-vars), [postcss-custom-properies](https://github.com/postcss/postcss-custom-properties), and, last but not least [postcss-modules-values](https://github.com/css-modules/postcss-modules-values). I don't know about you, but I was pretty confused with the range of options to choose from. It is even possible to use multiple at the same time (e.g postcss-modules-values and postcss-simple-vars) :confused: 
 
 At first I tried postcss-modules-values, and I was lucky enough to find an [issue](https://github.com/css-modules/postcss-modules-values/issues/6) opened (it remains opened) about theme support. Some say [css variables](https://www.w3.org/TR/css-variables/) is the future, and I partially agree with that. In my humble opinion, css-variables is not enough. Theming is not only about **replacing variables**, complex theming involves also the ability to add new css atributes to existing components. We can achieve that with SASS/CSS today pretty easily as the styles are global. For example:
 
@@ -139,7 +139,7 @@ My journey here started with a great [project](https://github.com/MicheleBertoli
 
 ![](http://i.giphy.com/3o6ZsW8eFwJbgpaMw0.gif)
 
-The simplicity of [CSJS](https://github.com/rtsao/csjs) by [Ryan Tsao](https://github.com/rtsao) really got my attention. I really like the fact that he is using ES6 template strings to make things dynamic.  Pretty smart. There it is goes, me excited again...
+The simplicity of [CSJS](https://github.com/rtsao/csjs) by [Ryan Tsao](https://github.com/rtsao) really got my attention. I really like the fact that he is using ES6 template strings to make things dynamic.  Pretty smart. There it is, me excited again...
 
 ![](http://i.imgur.com/N8TxB76.gif)
 
