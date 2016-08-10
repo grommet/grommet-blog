@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router';
 import fecha from 'fecha';
+import emoji from 'node-emoji';
 
 import Box from 'grommet/components/Box';
 import Heading from 'grommet/components/Heading';
@@ -22,11 +23,13 @@ import bash from 'highlight.js/lib/languages/bash';
 import xml from 'highlight.js/lib/languages/xml';
 import javascript from 'highlight.js/lib/languages/javascript';
 import scss from 'highlight.js/lib/languages/scss';
+import css from 'highlight.js/lib/languages/css';
 
 hljs.registerLanguage('bash', bash);
 hljs.registerLanguage('xml', xml);
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('scss', scss);
+hljs.registerLanguage('css', css);
 
 function _onSocialClick (event) {
   event.preventDefault();
@@ -228,7 +231,7 @@ export default class PostBody extends Component {
         <Box pad={{ horizontal: 'large', vertical: 'small' }}
           align='center' justify='center'>
           <Box className='post-body'>
-            <Markdown content={post.content || 'POST_CONTENT'}
+            <Markdown content={emoji.emojify(post.content || 'POST_CONTENT')}
               components={components} />
           </Box>
         </Box>
