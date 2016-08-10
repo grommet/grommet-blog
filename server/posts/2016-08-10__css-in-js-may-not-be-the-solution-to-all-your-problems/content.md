@@ -6,7 +6,7 @@ Cool, now that we have defined _CSS in JavaScript_, let me explain why I'm writi
 
 > I have to warn you: it was a long journey. TLDR; :smile: 
 
-Ultimately the Grommet community is seeking self-contained components with styles local by default so that they can instantiate a component and not worry about anything else. So the ideal Grommet app would look this this:
+Ultimately the Grommet community is seeking self-contained components with styles local by default so that they can instantiate a component and not worry about anything else. So the ideal Grommet app would look like this:
 
 ```javascript
 import React from 'react';
@@ -219,7 +219,7 @@ import hpeTheme from 'grommet-hpe-theme';
 </Grommet>
 ```
 
-I've created [grommet-simple](https://github.com/grommet/grommet-simple) that uses this Grommet branch, so feel free tinker with it. Your feedback is gladly appreciated.
+I've created [grommet-simple](https://github.com/grommet/grommet-simple) that uses this Grommet branch, so feel free  to tinker with it. Your feedback is gladly appreciated.
 
 Well, this is definitely closer to what we currently have today with SASS, but that are few lingering issues we were not able to overcome.
 
