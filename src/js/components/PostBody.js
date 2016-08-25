@@ -240,5 +240,3 @@ export default class PostBody extends Component {
     );
   }
 };
-
-export default PostBody;

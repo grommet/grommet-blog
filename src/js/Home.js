@@ -21,7 +21,7 @@ const HomeSection = (props) => {
   return (
     <Section {...props} pad={{vertical: "large"}}>
       <Box appCentered={true} full={true} justify="start"
-        textCentered={true} align="center"
+        align="center"
         pad={{vertical: "large"}}>
         {props.children}
       </Box>
