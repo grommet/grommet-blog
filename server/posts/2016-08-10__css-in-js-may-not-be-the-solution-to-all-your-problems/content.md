@@ -137,11 +137,11 @@ This is where my CSS Modules investigation stopped :cry:
 
 My journey here started with a great [project](https://github.com/MicheleBertoli/css-in-js) by [Michele Bertoli](https://github.com/MicheleBertoli) where he lists all the available projects for CSS in JavaScript (including css-loader for CSS Modules!). By the time I wrote this article I counted 41 options to choose from. If I was confused before by the different postcss variables plugins, imagine how I felt now.
 
-![](http://i.giphy.com/3o6ZsW8eFwJbgpaMw0.gif)
+![](https://i.giphy.com/3o6ZsW8eFwJbgpaMw0.gif)
 
 The simplicity of [CSJS](https://github.com/rtsao/csjs) by [Ryan Tsao](https://github.com/rtsao) really got my attention. I really like the fact that he is using ES6 template strings to make things dynamic.  Pretty smart. There it is, me excited again...
 
-![](http://i.imgur.com/N8TxB76.gif)
+![](https://i.imgur.com/N8TxB76.gif)
 
 I created another [branch](https://github.com/grommet/grommet/tree/csjs) in Grommet for my CSJS investigation. :tada: 
 
