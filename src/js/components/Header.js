@@ -58,5 +58,3 @@ export default class BlogHeader extends Component {
     );
   }
 };
-
-export default BlogHeader;
