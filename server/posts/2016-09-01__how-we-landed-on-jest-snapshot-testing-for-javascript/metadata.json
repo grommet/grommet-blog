@@ -1,0 +1,12 @@
+{
+  "id": "2016/09/01/how-we-landed-on-jest-snapshot-testing-for-javascript",
+  "createdAt": "2016-09-01T18:41:16.032Z",
+  "title": "How we landed on Jest snapshot testing for JavaScript",
+  "author": "Alan Souza",
+  "tags": [
+    "reactjs",
+    "jest",
+    "testing",
+    "javascript"
+  ]
+}
