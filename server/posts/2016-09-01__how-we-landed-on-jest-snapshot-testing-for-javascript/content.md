@@ -90,7 +90,7 @@ Jest really got our attention, mainly for the fact that it looks like a one-stop
 
 The idea is that you don't need to write the assertions manually, but instead you take a snapshot of a component with a given configuration, like taking a picture. In the future, if anything changes in the snapshot, the test fails. It's up to the developer to inspect the snapshot and decide whether is an expected change or if it is a bug in their code. Jest really got the "zero-configuration" right and it became really easy for us to write a test and get going in literally no time. This is how I would explain Jest snapshot testing in real life:
 
-![](http://i.giphy.com/tytmsBazx7SYE.gif)
+![](https://i.giphy.com/tytmsBazx7SYE.gif)
 
 As they explain in the Jest 14 release notes, they have limitations with performance and code coverage. But luckily they have a full-time member [Dmitrii Abramov](https://github.com/dmitriiabramov) who refactored a lot of things and my kudos to him for being so responsive with the issues I've faced. Recently they released Jest 15 which meets our needs.  This is how our [Anchor test](https://github.com/grommet/grommet/blob/master/__tests__/components/Anchor-test.js) is today:
 
