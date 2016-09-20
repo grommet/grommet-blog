@@ -10,7 +10,7 @@ Internal HPE teams also demonstrated an encouraging level of excitement, and the
 
 ![Demoing Grommet](IMG_1218-225x300.jpg)
 
-We came away from the show wanting to provide even more help for current and future Grommet users: example applications and templates; on-boarding paths; and tools to help teams create new themes and provide Grommet documentation to their developers using their own theme. We also want to improve our design resources to help teams get beyond thinking about just re-skinning and instead ask themselves what experiences they could be giving their users. Look for more sample applications coming soon on [grommet.io](http://grommet.io)!
+We came away from the show wanting to provide even more help for current and future Grommet users: example applications and templates; on-boarding paths; and tools to help teams create new themes and provide Grommet documentation to their developers using their own theme. We also want to improve our design resources to help teams get beyond thinking about just re-skinning and instead ask themselves what experiences they could be giving their users. Look for more sample applications coming soon on [grommet.io](https://grommet.github.io)!
 
 We're already contemplating the next Discover event in Las Vegas in 2016 where we hope to have an expanded presence with an interactive device wall.
 
