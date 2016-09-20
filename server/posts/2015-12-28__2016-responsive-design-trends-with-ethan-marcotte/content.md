@@ -38,7 +38,7 @@ Emphasis mine, but I think it’s true: there’s no singular standard for proto
 
 **E**: Not to me, personally—not really. I love visual design as much as I do front-end development; I thoroughly enjoy writing ([well, mostly](https://twitter.com/beep/status/601352909989801984)), consulting, and product design in equal measure.
 
-Thanks to Ethan for the time and stay tuned to this blog for more interviews with influencers in responsive design. To read more about Grommet and our mobile design philosophy check out [this page](http://www.grommet.io/docs/hpe/design/philosophy#mobile).
+Thanks to Ethan for the time and stay tuned to this blog for more interviews with influencers in responsive design. To read more about Grommet and our mobile design philosophy check out [this page](https://grommet.github.io/docs/mobile).
 
 The Grommet Team
 
