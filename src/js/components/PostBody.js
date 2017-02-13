@@ -6,8 +6,7 @@ import emoji from 'node-emoji';
 import Box from 'grommet/components/Box';
 import Heading from 'grommet/components/Heading';
 import Footer from 'grommet/components/Footer';
-import Tags from 'grommet/components/Tags';
-import Tag from 'grommet/components/Tag';
+import Button from 'grommet/components/Button';
 import Markdown from 'grommet/components/Markdown';
 
 import SocialFacebook from 'grommet/components/icons/base/SocialFacebook';
@@ -155,17 +154,16 @@ function _renderTags (tags, preview) {
         handlers.href= `/archive/tag/${tag}`;
       }
       return (
-        <Tag key={index} label={tag}
-          {...handlers} />
+        <Button key={index} primary={true} label={tag} {...handlers} />
       );
     }
   );
   return (
     <Footer pad='large' direction='column' justify='center' align='center'>
       <h3>Tags:</h3>
-      <Tags pad={{horizontal: 'small'}}>
-        {tagsNode}
-      </Tags>
+        <Box direction='row' wrap={true} align='center' pad={{ between: 'medium' }}>
+          {tagsNode}
+      </Box>
     </Footer>
   );
 }
