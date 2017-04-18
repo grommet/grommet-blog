@@ -1,0 +1,12 @@
+{
+  "id": "2016/05/12/my-first-blog-post",
+  "createdAt": "2016-05-12T22:23:56.466Z",
+  "title": "My First Blog Post",
+  "author": "Randy Ksar",
+  "tags": [
+    "first",
+    "UX",
+    "grommet"
+  ],
+  "coverImage": "grommet_grommet__The_most_advanced_UX_framework_for_enterprise_applications_.png"
+}
