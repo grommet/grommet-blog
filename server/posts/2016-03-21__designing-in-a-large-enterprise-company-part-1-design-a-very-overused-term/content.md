@@ -29,3 +29,8 @@ That brings me to where you fit in. Just like the company where you work or wher
 Design. It’s a plan, and an intention. Everyone is designing something. Our personal lives have some sort of plan that could be entwined with our job plans. Some plans are bigger than others; some are waiting (or hoping) to be big; and others have nothing to do with our nine-to five-job. With all that comes passion, money and attitude. Let’s start digging into how emotional output effects design culture.
 
 Stay tuned for the next part in the series… Designing in a Large Enterprise Company, Part 2: Your emotional state of design.
+
+What does 
+a single
+line break
+look like
